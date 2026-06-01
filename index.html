@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-Pazar | Modern Alışveriş</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Z-PAZAR</a>
+
+            <div class="mx-auto d-none d-md-block" style="width: 40%;">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control form-control-sm rounded-start-pill ps-3"
+                        placeholder="Ürün ara...">
+                    <button class="btn btn-primary btn-sm rounded-end-pill px-3" type="button">Ara</button>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="nav-link text-light position-relative">
+                    <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle"
+                        style="font-size: 0.6rem;">0</span>
+                    🛒 <span class="d-none d-sm-inline">Sepetim</span>
+                </a>
+                <a href="manager-login/manager-login.html" class="btn btn-outline-info btn-sm rounded-pill px-3">
+                    👤 Yönetici
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="header-section text-center p-4 bg-white rounded-4 shadow-sm mb-5">
+            <h2 class="fw-bold m-0">Günün Fırsatları</h2>
+            <p class="text-muted small mb-0">Seçili teknoloji ürünlerinde %20'ye varan indirimler.</p>
+        </div>
+
+        <div id="productList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+        </div>
+    </div>
+
+    <footer class="text-center">
+        <div class="container">
+            <p class="text-muted mb-0">&copy; 2026 Z-Pazar - Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="display.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+/* Sayfa yapısını düzeltmek için */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7f6;
+}
+
+.container {
+    flex: 1; /* İçeriğin sayfayı doldurmasını ve footer'ı aşağı itmesini sağlar */
+}
+
+/* Navbar ve Header Arası Boşluk */
+.navbar {
+    margin-bottom: 2rem;
+}
+
+/* Navbar Arama Çubuğu Odak Efekti */
+.navbar .form-control:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+}
+
+/* Header Kısmı ve Arama Çubuğu */
+.header-section {
+    padding: 40px 0;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 3rem;
+}
+
+/* Ürün Kartı Tasarımı */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: #fff;
+}
+
+/* style.css ekleme */
+.card-body {
+    min-height: 180px; /* İçerik az olsa bile kart boyutu değişmez */
+}
+
+/* Fareyle üzerine gelince (Hover) */
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Ürün Resmi */
+.card-img-top {
+    height: 250px;
+    object-fit: contain; /* Resmin kesilmesini önler, kutuya sığdırır */
+    background: #fff;
+    padding: 15px;
+}
+
+/* Kart İçeriği */
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    height: 2.4em; /* Başlıkları 2 satırda sabitler */
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+.category-badge {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background-color: #e9ecef;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Header Tasarımı */
+.header-section h2 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.header-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: #0d6efd;
+    border-radius: 2px;
+}
+
+footer {
+    flex-shrink: 0; /* Footer'ın küçülmesini engeller */
+    background: #fff;
+    margin-top: auto;
+    border-top: 1px solid #eee;
+    padding: 20px 0;
+}
