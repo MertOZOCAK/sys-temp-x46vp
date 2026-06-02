@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Firebase Yapılandırması
 const firebaseConfig = {
     apiKey: "AIzaSyCwXYbUjJr20WCrqhuNbPhiUA1oleeUSuQ",
     authDomain: "z-pazar.firebaseapp.com",
@@ -16,121 +15,138 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// HTML Elementleri
+// Giriş Kontrolü: Giriş yapmamışsa index'e at
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "../../index.html";
+    }
+});
+
+// Elementler
 const productForm = document.getElementById('productForm');
 const adminProductList = document.getElementById('adminProductList');
 const formTitle = document.getElementById('formTitle');
 const submitBtn = document.getElementById('submitBtn');
-const cancelEditBtn = document.getElementById('cancelEdit');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
 const editIdInput = document.getElementById('editId');
+const statusMessage = document.getElementById('statusMessage');
+const deleteModal = document.getElementById('deleteModal');
+const logoutBtn = document.getElementById('logoutBtn');
+let deleteId = null;
 
-// 1. Oturum Kontrolü
-onAuthStateChanged(auth, (user) => {
-    if (!user) window.location.href = "../../index.html";
-});
+// Çıkış İşlemi
+if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+        try {
+            await signOut(auth);
+            window.location.href = "../../index.html";
+        } catch (err) {
+            showToast("Çıkış yapılırken hata oluştu!", false);
+        }
+    };
+}
 
-// 2. Ürünleri Listeleme (Kopyala Butonu Eklendi)
-const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-onSnapshot(q, (snapshot) => {
+// Kategori "Diğer" Dinamiği
+window.toggleOtherInput = function() {
+    const categorySelect = document.getElementById('pCategory');
+    const otherInput = document.getElementById('otherCategoryInput');
+    if (categorySelect.value === 'Diğer') {
+        otherInput.classList.remove('d-none');
+    } else {
+        otherInput.classList.add('d-none');
+        otherInput.value = "";
+    }
+};
+
+// Ürünleri Listeleme
+onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snapshot) => {
     adminProductList.innerHTML = "";
     document.getElementById('productCount').innerText = `${snapshot.size} Ürün Aktif`;
-    
-    snapshot.forEach((doc) => {
-        const product = doc.data();
-        const row = `
-            <tr class="product-row">
-                <td data-label="Ürün" class="ps-4">
-                    <div class="d-flex align-items-center">
-                        <img src="${product.images[0]}" class="product-img-preview me-3 border">
-                        <div class="fw-bold">${product.title}</div>
-                    </div>
-                </td>
-                <td data-label="Kategori">
-                    <span class="badge bg-light text-dark rounded-pill">${product.category}</span>
-                </td>
-                <td data-label="Fiyat" class="text-primary fw-bold">
-                    ${new Intl.NumberFormat('tr-TR').format(product.price)} TL
-                </td>
-                <td class="text-end pe-4">
-                    <div class="d-flex justify-content-end gap-2">
-                        <button class="btn-action bg-primary-subtle text-primary edit-btn" data-id="${doc.id}" title="Düzenle">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn-action bg-success-subtle text-success copy-btn" data-id="${doc.id}" title="Kopyala">
-                            <i class="bi bi-layers-fill"></i>
-                        </button>
-                        <button class="btn-action bg-danger-subtle text-danger delete-btn" data-id="${doc.id}" title="Sil">
-                            <i class="bi bi-trash3-fill"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+
+    snapshot.forEach((docSnap, index) => {
+        const p = docSnap.data();
+        const row = document.createElement('tr');
+        row.className = "product-row";
+        row.style.animationDelay = `${index * 0.05}s`;
+        
+        row.innerHTML = `
+            <td data-label="Ürün" class="ps-4">
+                <div class="d-flex align-items-center">
+                    <img src="${p.images[0]}" class="product-img-preview me-3 border">
+                    <div class="fw-bold text-truncate">${p.title}</div>
+                </div>
+            </td>
+            <td data-label="Kategori"><span class="badge bg-light text-dark rounded-pill">${p.category}</span></td>
+            <td data-label="Fiyat" class="text-primary fw-bold">${new Intl.NumberFormat('tr-TR').format(p.price)} TL</td>
+            <td data-label="İşlem" class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-2 action-group">
+                    <button class="btn-action bg-primary-subtle text-primary edit-btn" data-id="${docSnap.id}"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn-action bg-success-subtle text-success copy-btn" data-id="${docSnap.id}"><i class="bi bi-layers-fill"></i></button>
+                    <button class="btn-action bg-danger-subtle text-danger delete-btn" data-id="${docSnap.id}"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+            </td>
         `;
-        adminProductList.innerHTML += row;
+        adminProductList.appendChild(row);
     });
 });
 
-// 3. İşlem Butonlarını Yönetme (Sil, Düzenle, Kopyala)
+// Edit / Copy / Delete İşlemleri
 adminProductList.addEventListener('click', async (e) => {
     const target = e.target.closest('button');
     if (!target) return;
-
     const id = target.dataset.id;
 
-    // SİLME İŞLEMİ
     if (target.classList.contains('delete-btn')) {
-        if (confirm("Bu ürünü silmek istediğine emin misin?")) {
-            await deleteDoc(doc(db, "products", id));
-        }
-    }
-
-    // DÜZENLEME VE KOPYALAMA İŞLEMİ (Ortak Veri Çekme)
-    if (target.classList.contains('edit-btn') || target.classList.contains('copy-btn')) {
-        const isCopy = target.classList.contains('copy-btn');
-        
-        try {
-            const docRef = doc(db, "products", id);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const product = docSnap.data();
-
-                // Formu doldur
-                document.getElementById('pName').value = product.title;
-                document.getElementById('pCategory').value = product.category;
-                document.getElementById('pPrice').value = product.price;
-                document.getElementById('pDesc').value = product.description;
-                document.getElementById('productImage1').value = product.images[0] || "";
-                document.getElementById('productImage2').value = product.images[1] || "";
-
-                if (isCopy) {
-                    // KOPYALAMA MODU: ID'yi boş bırak ki yeni ürün olarak kaydedilsin
-                    editIdInput.value = "";
-                    formTitle.innerText = "Ürünü Kopyala (Yeni Olarak Ekle)";
-                    submitBtn.innerText = "Kopyayı Yayınla";
-                } else {
-                    // DÜZENLEME MODU
-                    editIdInput.value = id;
-                    formTitle.innerText = "Ürünü Düzenle";
-                    submitBtn.innerText = "Değişiklikleri Kaydet";
-                }
-                
-                cancelEditBtn.classList.remove('d-none');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+        deleteId = id;
+        deleteModal.style.display = 'flex';
+    } else {
+        const docSnap = await getDoc(doc(db, "products", id));
+        if (docSnap.exists()) {
+            const p = docSnap.data();
+            document.getElementById('pName').value = p.title;
+            document.getElementById('pPrice').value = p.price;
+            document.getElementById('pDesc').value = p.description;
+            document.getElementById('productImage1').value = p.images[0] || "";
+            document.getElementById('productImage2').value = p.images[1] || "";
+            
+            const categorySelect = document.getElementById('pCategory');
+            const otherInput = document.getElementById('otherCategoryInput');
+            const options = Array.from(categorySelect.options).map(o => o.value);
+            
+            if (options.includes(p.category)) {
+                categorySelect.value = p.category;
+                otherInput.classList.add('d-none');
+            } else {
+                categorySelect.value = 'Diğer';
+                otherInput.classList.remove('d-none');
+                otherInput.value = p.category;
             }
-        } catch (error) {
-            console.error("Veri çekme hatası:", error);
+
+            if (target.classList.contains('copy-btn')) {
+                editIdInput.value = "";
+                formTitle.innerText = "Ürünü Kopyala";
+                submitBtn.innerText = "Kopyayı Yayınla";
+            } else {
+                editIdInput.value = id;
+                formTitle.innerText = "Ürünü Düzenle";
+                submitBtn.innerText = "Değişiklikleri Kaydet";
+            }
+            cancelEditBtn.classList.remove('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 });
 
-// 4. Ekleme veya Güncelleme İşlemi
+// Kaydet / Güncelle
 productForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const editId = editIdInput.value;
+    const catSelect = document.getElementById('pCategory').value;
+    const catOther = document.getElementById('otherCategoryInput').value;
+    const finalCategory = (catSelect === 'Diğer' && catOther) ? catOther : catSelect;
+
     const data = {
         title: document.getElementById('pName').value,
-        category: document.getElementById('pCategory').value,
+        category: finalCategory,
         price: Number(document.getElementById('pPrice').value),
         description: document.getElementById('pDesc').value,
         images: [document.getElementById('productImage1').value, document.getElementById('productImage2').value || ""],
@@ -138,23 +154,22 @@ productForm.addEventListener('submit', async (e) => {
     };
 
     try {
-        if (editId) {
-            // Düzenleme
-            await updateDoc(doc(db, "products", editId), data);
-            alert("Ürün güncellendi!");
+        if (editIdInput.value) {
+            await updateDoc(doc(db, "products", editIdInput.value), data);
+            showToast("Ürün başarıyla güncellendi!");
         } else {
-            // Yeni Ekleme (veya Kopyalama)
             data.createdAt = serverTimestamp();
             await addDoc(collection(db, "products"), data);
-            alert("Ürün başarıyla yayınlandı!");
+            showToast("Ürün başarıyla yayınlandı!");
         }
         resetForm();
-    } catch (err) { console.error(err); }
+    } catch (err) { showToast("Hata: " + err.message, false); }
 });
 
-// 5. Form Sıfırlama
+// Sıfırlama
 function resetForm() {
     productForm.reset();
+    document.getElementById('otherCategoryInput').classList.add('d-none');
     editIdInput.value = "";
     formTitle.innerText = "Yeni Ürün Ekle";
     submitBtn.innerText = "Ürünü Yayınla";
@@ -162,4 +177,25 @@ function resetForm() {
 }
 
 cancelEditBtn.onclick = resetForm;
-document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+// Silme Onay
+document.getElementById('confirmDelete').onclick = async () => {
+    if (deleteId) {
+        await deleteDoc(doc(db, "products", deleteId));
+        showToast("Ürün silindi!", false);
+        deleteModal.style.display = 'none';
+    }
+};
+document.getElementById('cancelDelete').onclick = () => deleteModal.style.display = 'none';
+
+// Toast Mesajı
+function showToast(message, isSuccess = true) {
+    statusMessage.textContent = message;
+    statusMessage.style.backgroundColor = isSuccess ? '#198754' : '#dc3545';
+    statusMessage.style.display = 'block';
+    statusMessage.className = "toast-show";
+    setTimeout(() => {
+        statusMessage.className = "toast-hide";
+        setTimeout(() => { statusMessage.style.display = 'none'; }, 400);
+    }, 2500);
+}

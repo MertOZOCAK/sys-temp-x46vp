@@ -10,49 +10,62 @@ const firebaseConfig = {
     appId: "1:185640177672:web:6cb085e5474291d12d01bd"
 };
 
-// Firebase'i bir kez başlatıyoruz
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Eğer bu dosya login sayfasında çalışıyorsa formu dinle
 const loginForm = document.getElementById('loginForm');
+const messageBox = document.getElementById('messageBox'); 
 
 if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Mesaj kutusunu sıfırla
+        messageBox.classList.add('d-none');
+        messageBox.className = "text-center small mb-3 fw-bold p-2 rounded d-none";
+
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
-                // Başarılı girişte yönlendirilecek sayfa
-                window.location.href = "app/app.html";
+                // BAŞARILI: Yeşil kutu
+                messageBox.textContent = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                messageBox.classList.add('text-success', 'bg-success-subtle', 'border', 'border-success');
+                messageBox.classList.remove('d-none');
+
+                // 5 saniye sonra yönlendir
+                setTimeout(() => {
+                    window.location.href = "app/app.html";
+                }, 2500);
             })
             .catch((error) => {
-                alert("Hatalı giriş! Lütfen bilgilerinizi kontrol edin.");
+                // HATA: Kırmızı kutu
+                messageBox.textContent = "Hatalı e-posta veya şifre!";
+                messageBox.classList.add('text-danger', 'bg-danger-subtle', 'border', 'border-danger');
+                messageBox.classList.remove('d-none');
                 console.error("Giriş Hatası:", error);
             });
     });
 }
 
-// Oturum kontrolü: Eğer kullanıcı zaten giriş yapmışsa veya yapmamışsa yapılacaklar
+// Oturum kontrolü
 onAuthStateChanged(auth, (user) => {
-    // Bu kısım admin (app.html) sayfasında koruma sağlar
     const currentPath = window.location.pathname;
     if (!user && currentPath.includes("app.html")) {
-        window.location.href = "../login.html"; // Giriş yapmamışsa geri gönder
+        window.location.href = "../login.html";
     }
 });
 
+// Şifre göster/gizle
 const toggleBtn = document.getElementById('togglePassword');
 const passwordInput = document.getElementById('password');
 
-toggleBtn.addEventListener('click', () => {
-    const type = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = type;
-
-    // İkon değiştirme
-    const icon = toggleBtn.querySelector('i');
-    icon.classList.toggle('bi-eye-fill');
-    icon.classList.toggle('bi-eye-slash-fill');
-});
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        toggleBtn.querySelector('i').classList.toggle('bi-eye-fill');
+        toggleBtn.querySelector('i').classList.toggle('bi-eye-slash-fill');
+    });
+}
