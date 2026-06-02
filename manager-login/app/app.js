@@ -47,7 +47,7 @@ if (logoutBtn) {
 }
 
 // Kategori "Diğer" Dinamiği
-window.toggleOtherInput = function() {
+window.toggleOtherInput = function () {
     const categorySelect = document.getElementById('pCategory');
     const otherInput = document.getElementById('otherCategoryInput');
     if (categorySelect.value === 'Diğer') {
@@ -61,14 +61,17 @@ window.toggleOtherInput = function() {
 // Ürünleri Listeleme
 onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), (snapshot) => {
     adminProductList.innerHTML = "";
-    document.getElementById('productCount').innerText = `${snapshot.size} Ürün Aktif`;
+    const productCount = document.getElementById('productCount');
+    if (productCount) {
+        productCount.innerText = `${snapshot.size} Ürün Aktif`;
+    }
 
     snapshot.forEach((docSnap, index) => {
         const p = docSnap.data();
         const row = document.createElement('tr');
         row.className = "product-row";
         row.style.animationDelay = `${index * 0.05}s`;
-        
+
         row.innerHTML = `
             <td data-label="Ürün" class="ps-4">
                 <div class="d-flex align-items-center">
@@ -108,11 +111,11 @@ adminProductList.addEventListener('click', async (e) => {
             document.getElementById('pDesc').value = p.description;
             document.getElementById('productImage1').value = p.images[0] || "";
             document.getElementById('productImage2').value = p.images[1] || "";
-            
+
             const categorySelect = document.getElementById('pCategory');
             const otherInput = document.getElementById('otherCategoryInput');
             const options = Array.from(categorySelect.options).map(o => o.value);
-            
+
             if (options.includes(p.category)) {
                 categorySelect.value = p.category;
                 otherInput.classList.add('d-none');

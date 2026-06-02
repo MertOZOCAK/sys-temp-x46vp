@@ -14,6 +14,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let allProducts = [];
+let cart = []; // Sepet dizisi
 
 document.addEventListener('DOMContentLoaded', () => {
     const productList = document.getElementById('productList');
@@ -24,43 +25,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxPriceInput = document.getElementById('maxPrice');
     const resetBtn = document.getElementById('resetFilters');
 
-    // 1. Ürünleri Ekrana Basma
+    // Sepet Güncelleme Fonksiyonu
+    function updateCart() {
+        const cartSection = document.getElementById('cartSection');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartTotal = document.getElementById('cartTotal');
+        const cartCount = document.getElementById('cartCount');
+
+        if (cart.length > 0) {
+            cartSection.classList.remove('d-none');
+        } else {
+            cartSection.classList.add('d-none');
+        }
+
+        cartItemsList.innerHTML = "";
+        let total = 0;
+        cart.forEach(item => {
+            total += item.price;
+            cartItemsList.innerHTML += `<div class="list-group-item d-flex justify-content-between"><span>${item.title}</span><span class="fw-bold">${new Intl.NumberFormat('tr-TR').format(item.price)} TL</span></div>`;
+        });
+        cartTotal.innerText = new Intl.NumberFormat('tr-TR').format(total);
+        cartCount.innerText = cart.length;
+    }
+
     function renderProducts(products) {
         if (!productList) return;
         productList.innerHTML = "";
 
-        if (products.length === 0) {
-            productList.innerHTML = `<div class="col-12 text-center mt-5"><p class="text-muted">Ürün bulunamadı.</p></div>`;
-            return;
-        }
-
         products.forEach((product) => {
-            const cardHtml = `
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-0">
-                        <img src="${product.images[0] || 'https://via.placeholder.com/300'}" class="card-img-top p-3" alt="${product.title}" style="height: 200px; object-fit: contain;">
-                        <div class="card-body d-flex flex-column">
-                            <span class="badge bg-light text-primary rounded-pill mb-2 align-self-start border">${product.category}</span>
-                            <h6 class="card-title fw-bold">${product.title}</h6>
-                            <p class="card-text text-muted small flex-grow-1">${product.description ? product.description.substring(0, 60) + '...' : ''}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <span class="product-price text-primary fw-bold">${new Intl.NumberFormat('tr-TR').format(product.price)} TL</span>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3">Sepete Ekle</button>
-                            </div>
-                        </div>
+            const col = document.createElement('div');
+            col.className = "col";
+            col.innerHTML = `
+            <div class="card h-100 shadow-sm border-0">
+                <img src="${product.images[0] || 'https://via.placeholder.com/300'}" class="card-img-top p-3" alt="${product.title}">
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-light text-primary rounded-pill mb-2 align-self-start border">${product.category || 'Genel'}</span>
+                    <h6 class="card-title fw-bold">${product.title}</h6>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="product-price text-primary fw-bold">${new Intl.NumberFormat('tr-TR').format(product.price)} TL</span>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3 add-to-cart-btn">Sepete Ekle</button>
                     </div>
                 </div>
-            `;
-            productList.insertAdjacentHTML('beforeend', cardHtml);
+            </div>`;
+
+            // Butonu hemen burada yakalıyoruz
+            const btn = col.querySelector('.add-to-cart-btn');
+            btn.addEventListener('click', () => {
+                cart.push({ title: product.title, price: product.price });
+                updateCart();
+                // Sepet alanını göster ve oraya kaydır
+                document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            productList.appendChild(col);
         });
     }
+
+    // Global sepete ekleme fonksiyonu
+window.addToCart = (product) => {
+    cart.push(product);
+    updateCart();
+    document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
+};
 
     // 2. Kategorileri Otomatik Güncelleme
     function updateCategoryDropdown(products) {
         if (!categoryFilter) return;
         const currentSelection = categoryFilter.value;
         const categories = [...new Set(products.map(p => p.category).filter(c => c))];
-        
+
         categoryFilter.innerHTML = `<option value="all">Tüm Kategoriler</option>`;
         categories.forEach(cat => {
             categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
@@ -108,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Dinleyiciler (Event Listeners)
     const handleInput = (e) => {
         const val = e.target.value;
-        if(searchInput) searchInput.value = val;
-        if(mobileSearchInput) mobileSearchInput.value = val;
+        if (searchInput) searchInput.value = val;
+        if (mobileSearchInput) mobileSearchInput.value = val;
         applyLogic();
     };
 
@@ -122,11 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sıfırla Butonu Düzenlendi
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            if(categoryFilter) categoryFilter.value = "all";
-            if(minPriceInput) minPriceInput.value = "";
-            if(maxPriceInput) maxPriceInput.value = "";
-            if(searchInput) searchInput.value = "";
-            if(mobileSearchInput) mobileSearchInput.value = "";
+            if (categoryFilter) categoryFilter.value = "all";
+            if (minPriceInput) minPriceInput.value = "";
+            if (maxPriceInput) maxPriceInput.value = "";
+            if (searchInput) searchInput.value = "";
+            if (mobileSearchInput) mobileSearchInput.value = "";
             applyLogic(); // Sıfırladıktan sonra listeyi tekrar hesapla
         });
     }
