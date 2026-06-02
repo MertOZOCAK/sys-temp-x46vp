@@ -24,26 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxPriceInput = document.getElementById('maxPrice');
     const resetBtn = document.getElementById('resetFilters');
 
-    // 1. Kategorileri Otomatik Güncelleme (Veritabanındaki her şeyi bulur)
-    function updateCategoryDropdown(products) {
-        if (!categoryFilter) return;
-        
-        // Mevcut seçili değeri koru
-        const currentSelection = categoryFilter.value;
-        
-        // Benzersiz kategorileri al
-        const categories = [...new Set(products.map(p => p.category).filter(c => c))];
-        
-        categoryFilter.innerHTML = `<option value="all">Tüm Kategoriler</option>`;
-        categories.forEach(cat => {
-            categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
-
-        // Eğer önceden bir seçim varsa onu geri yükle
-        categoryFilter.value = currentSelection;
-    }
-
-    // 2. Ürünleri Ekrana Basma
+    // 1. Ürünleri Ekrana Basma
     function renderProducts(products) {
         if (!productList) return;
         productList.innerHTML = "";
@@ -74,28 +55,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Filtreleme Mantığı
-    function applyFilters() {
-        const searchTerm = (searchInput?.value || mobileSearchInput?.value || "").toLowerCase();
-        const selectedCategory = categoryFilter?.value || "all";
-        const minPrice = parseFloat(minPriceInput?.value) || 0;
-        const maxPrice = parseFloat(maxPriceInput?.value) || Infinity;
+    // 2. Kategorileri Otomatik Güncelleme
+    function updateCategoryDropdown(products) {
+        if (!categoryFilter) return;
+        const currentSelection = categoryFilter.value;
+        const categories = [...new Set(products.map(p => p.category).filter(c => c))];
+        
+        categoryFilter.innerHTML = `<option value="all">Tüm Kategoriler</option>`;
+        categories.forEach(cat => {
+            categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
+        });
+        categoryFilter.value = currentSelection;
+    }
 
-        const filtered = allProducts.filter(p => {
-            // Arama filtresi
-            const matchesSearch = p.title.toLowerCase().includes(searchTerm) || 
-                                  (p.category && p.category.toLowerCase().includes(searchTerm));
-            
-            // Kategori filtresi (Tam eşleşme sağlar)
-            const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
-            
-            // Fiyat filtresi
-            const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+    // 3. ANA ALGORİTMA: Filtreleme + Samsung Önceliği
+    function applyLogic() {
+        const term = (searchInput?.value || mobileSearchInput?.value || "").toLowerCase();
+        const selectedCat = categoryFilter?.value || "all";
+        const minP = parseFloat(minPriceInput?.value) || 0;
+        const maxP = parseFloat(maxPriceInput?.value) || Infinity;
 
+        let results = allProducts.filter(p => {
+            const matchesSearch = p.title.toLowerCase().includes(term) || (p.category && p.category.toLowerCase().includes(term));
+            const matchesCategory = selectedCat === "all" || p.category === selectedCat;
+            const matchesPrice = p.price >= minP && p.price <= maxP;
             return matchesSearch && matchesCategory && matchesPrice;
         });
 
-        renderProducts(filtered);
+        // Samsung olanları en üste taşıyan sıralama
+        results.sort((a, b) => {
+            const aIsSamsung = a.title.toLowerCase().includes('samsung');
+            const bIsSamsung = b.title.toLowerCase().includes('samsung');
+            if (aIsSamsung && !bIsSamsung) return -1;
+            if (!aIsSamsung && bIsSamsung) return 1;
+            return 0;
+        });
+
+        renderProducts(results);
     }
 
     // 4. Firebase Veri Akışı
@@ -105,25 +101,25 @@ document.addEventListener('DOMContentLoaded', () => {
         snapshot.forEach((doc) => {
             allProducts.push({ id: doc.id, ...doc.data() });
         });
-        
-        updateCategoryDropdown(allProducts); // Kategori listesini otomatik doldur
-        applyFilters(); 
+        updateCategoryDropdown(allProducts);
+        applyLogic();
     });
 
-    // 5. Olay Dinleyiciler
-    const handleSearch = (e) => {
+    // 5. Dinleyiciler (Event Listeners)
+    const handleInput = (e) => {
         const val = e.target.value;
         if(searchInput) searchInput.value = val;
         if(mobileSearchInput) mobileSearchInput.value = val;
-        applyFilters();
+        applyLogic();
     };
 
-    if (searchInput) searchInput.addEventListener('input', handleSearch);
-    if (mobileSearchInput) mobileSearchInput.addEventListener('input', handleSearch);
-    if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
-    if (minPriceInput) minPriceInput.addEventListener('input', applyFilters);
-    if (maxPriceInput) maxPriceInput.addEventListener('input', applyFilters);
+    if (searchInput) searchInput.addEventListener('input', handleInput);
+    if (mobileSearchInput) mobileSearchInput.addEventListener('input', handleInput);
+    if (categoryFilter) categoryFilter.addEventListener('change', applyLogic);
+    if (minPriceInput) minPriceInput.addEventListener('input', applyLogic);
+    if (maxPriceInput) maxPriceInput.addEventListener('input', applyLogic);
 
+    // Sıfırla Butonu Düzenlendi
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
             if(categoryFilter) categoryFilter.value = "all";
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(maxPriceInput) maxPriceInput.value = "";
             if(searchInput) searchInput.value = "";
             if(mobileSearchInput) mobileSearchInput.value = "";
-            renderProducts(allProducts);
+            applyLogic(); // Sıfırladıktan sonra listeyi tekrar hesapla
         });
     }
 });
