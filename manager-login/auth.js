@@ -36,7 +36,7 @@ if (loginForm) {
 
                 // 5 saniye sonra yönlendir
                 setTimeout(() => {
-                    window.location.href = "app/app.html";
+                    window.location.href = "app/appmenu.html";
                 }, 2500);
             })
             .catch((error) => {

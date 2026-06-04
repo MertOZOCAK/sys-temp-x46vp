@@ -1,0 +1,36 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Firebase Yapılandırması (Kendi bilgilerini buraya da eklemelisin)
+const firebaseConfig = {
+    apiKey: "AIzaSyCwXYbUjJr20WCrqhuNbPhiUA1oleeUSuQ",
+    authDomain: "z-pazar.firebaseapp.com",
+    projectId: "z-pazar",
+    storageBucket: "z-pazar.firebasestorage.app",
+    messagingSenderId: "185640177672",
+    appId: "1:185640177672:web:6cb085e5474291d12d01bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const logoutBtn = document.getElementById('logoutBtn');
+
+// Çıkış İşlemi
+if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+        try {
+            await signOut(auth);
+            window.location.href = "../../index.html";
+        } catch (err) {
+            console.error("Çıkış hatası:", err);
+            alert("Çıkış yapılırken hata oluştu!");
+        }
+    };
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "../../index.html";
+    }
+});
