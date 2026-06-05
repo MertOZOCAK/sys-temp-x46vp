@@ -42,7 +42,7 @@ if (logoutBtn) {
     logoutBtn.onclick = async () => {
         try {
             await signOut(auth);
-            window.location.href = "../../index.html";
+            window.location.href = "../../../index.html";
         } catch (err) {
             showToast("Çıkış yapılırken hata oluştu!", false);
         }
