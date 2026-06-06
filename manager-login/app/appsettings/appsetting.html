@@ -14,6 +14,37 @@
 
 <body>
     <style>
+        :root {
+            --primary: #4361ee;
+            --bg: #f8f9fd;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            background: var(--bg) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #2b2d42;
+            overflow-x: hidden;
+        }
+
+        /* --- STABİL ANİMASYONLAR --- */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: slideUp 0.5s ease-out forwards;
+            will-change: transform, opacity;
+        }
+
         /* Çıkış Yap Butonu Özel Tasarımı */
         .btn-logout {
             background: #fff;
