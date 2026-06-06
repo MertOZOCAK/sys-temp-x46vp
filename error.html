@@ -199,6 +199,13 @@
             color: #94a3b8;
             margin-top: 10px;
         }
+
+        #notesList {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            /* Notların arasına 12px boşluk bırakır */
+        }
     </style>
 </head>
 
@@ -215,15 +222,15 @@
     </div>
 
     <div class="modal-overlay" id="updateModal" onclick="toggleModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-        <h4 class="mb-3" id="versionTitle" style="color:white;">Yükleniyor...</h4>
-        
-        <ul id="notesList" style="color: #94a3b8; padding-left: 20px;">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h4 class="mb-3" id="versionTitle" style="color:white;">Yükleniyor...</h4>
+
+            <ul id="notesList" style="color: #a0aec0; padding-left: 20px;">
             </ul>
-        
-        <button class="update-btn" style="width:100%" onclick="toggleModal()">Kapat</button>
+
+            <button class="update-btn" style="width:100%" onclick="toggleModal()">Kapat</button>
+        </div>
     </div>
-</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";

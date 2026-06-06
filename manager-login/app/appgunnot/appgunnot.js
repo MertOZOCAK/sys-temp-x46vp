@@ -214,7 +214,7 @@ document.getElementById('saveVersionBtn').onclick = async () => {
     try {
         localNotesData.currentVersion = versionInput;
         await setDoc(updatesDocRef, localNotesData, { merge: true });
-        alert('Sistem sürümü başarıyla güncellendi!');
+        showToast('Sistem sürümü başarıyla güncellendi!', true);
     } catch (err) {
         console.error("Hata:", err);
         alert("Sürüm güncellenirken hata oluştu: " + err.message);
