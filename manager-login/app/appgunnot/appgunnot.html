@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-Pazar | Güncelleme Notları Yönetimi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --bg: #f8f9fd;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #2b2d42;
+            overflow-x: hidden;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: slideUp 0.5s ease-out forwards;
+            will-change: transform, opacity;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease;
+        }
+
+        .sticky-form {
+            position: sticky;
+            top: 20px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid #edf2f7;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        .note-row {
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .note-row:hover {
+            background: rgba(67, 97, 238, 0.02);
+            transform: translateX(5px);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            min-width: 90px;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-action-edit {
+            background: #e0e7ff;
+            color: #4361ee;
+        }
+
+        .btn-action-edit:hover {
+            transform: scale(1.1);
+            background: #4361ee;
+            color: white;
+        }
+
+        .btn-action-delete {
+            background: #fee2e2;
+            color: #dc3545;
+        }
+
+        .btn-action-delete:hover {
+            transform: scale(1.1);
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        /* Çıkış Yap Butonu Özel Tasarımı */
+        .btn-logout {
+            background: #fff;
+            color: #dc3545;
+            border: 2px solid #fee2e2;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Üzerine gelince (Hover) Animasyonu */
+        .btn-logout:hover {
+            background: #dc3545;
+            color: #fff;
+            border-color: #dc3545;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.2) !important;
+        }
+
+        /* İkon Animasyonu */
+        .btn-logout i {
+            transition: transform 0.4s ease;
+        }
+
+        .btn-logout:hover i {
+            transform: translateX(3px);
+            /* İkon hafifçe sağa kayar */
+        }
+
+        /* Tıklama Efekti */
+        .btn-logout:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .status-badge-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 5px 15px;
+            border-radius: 50px;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4361ee;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .live-dot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #4361ee;
+            border-radius: 50%;
+            animation: live-ping-blue 1.5s infinite ease-out;
+        }
+
+        @keyframes live-ping-blue {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(3.5);
+                opacity: 0;
+            }
+        }
+
+        #currentVersionBadge {
+            color: #4361ee !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f3f5;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Toast Animasyonu */
+        @keyframes fadeInToast {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOutToast {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .toast-show {
+            animation: fadeInToast 0.4s ease-out forwards;
+        }
+
+        .toast-hide {
+            animation: fadeOutToast 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="deleteModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+        <div
+            style="background:white; padding:25px; border-radius:20px; width:300px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+            <h6 class="fw-bold mb-3">Silmek istediğine emin misin?</h6>
+            <div class="d-flex gap-2 justify-content-center">
+                <button id="confirmDelete" class="btn btn-danger rounded-pill px-4">Sil</button>
+                <button id="cancelDelete" class="btn btn-light rounded-pill px-4">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusMessage"
+        style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px 25px; border-radius: 10px; color: white; display: none; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    </div>
+
+    <div class="container py-4">
+        <header class="fade-in d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+            <h4 class="fw-bold mb-0 text-primary">Z-Pazar Admin</h4>
+            <a href="../appmenu.html" class="btn btn-logout shadow-sm">
+                <i class="bi bi-arrow-left me-2"></i>Geri Dön
+            </a>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-lg-5 fade-in" style="animation-delay: 0.1s;">
+                <div class="card admin-card p-4 sticky-form">
+
+                    <h5 class="fw-bold mb-3">Aktif Sürüm Yapılandırması</h5>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">Sistem Sürümü (Örn: v1.0)</label>
+                        <div class="input-group">
+                            <input type="text" id="versionInput" class="form-control" placeholder="v1.0">
+                            <button class="btn btn-primary px-4 fw-bold rounded-end-3" id="saveVersionBtn">
+                                <i class="bi bi-save me-1"></i> Kaydet
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" style="border-color: #edf2f7; border-width: 2px;">
+
+                    <h5 id="formTitle" class="fw-bold mb-3">Yeni Not Ekle</h5>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-muted">Güncelleme Detayı</label>
+                        <textarea id="noteInput" class="form-control" rows="3"
+                            placeholder="Sistem altyapısı optimize edildi..."></textarea>
+                    </div>
+                    <div class="d-flex flex-column gap-2 mt-3">
+                        <button id="addNoteBtn" class="btn btn-primary rounded-pill py-3 fw-bold">
+                            <i class="bi bi-plus-lg me-1"></i> Notu Yayına Al
+                        </button>
+                        <button id="cancelEditBtn" class="btn btn-light border rounded-pill py-2 fw-bold d-none">
+                            Vazgeç
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-7 fade-in" style="animation-delay: 0.2s;">
+                <div class="card admin-card border-0 overflow-hidden">
+                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
+                        <h6 class="fw-bold mb-0">Sürüm Notları Listesi</h6>
+
+                        <div class="status-badge-container">
+                            <div class="live-dot"></div>
+                            <span id="currentVersionBadge" class="fw-bold"
+                                style="font-size: 0.85rem;">Yükleniyor...</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-muted small">
+                                    <th class="ps-4">GÜNCELLEME NOTU</th>
+                                    <th class="text-end pe-4">İŞLEM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notesProductList">
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted py-4">Veritabanı bekleniyor...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="appgunnot.js"></script>
+        
+</body>
+
+</html>

@@ -16,21 +16,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app); // BU EKSİKTİ
 const auth = getAuth(app);
 
-// Çıkış İşlemi
-if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-        try {
-            await signOut(auth);
-            window.location.href = "../../index.html";
-        } catch (err) {
-            console.error("Çıkış hatası:", err);
-            alert("Çıkış yapılırken hata oluştu!");
-        }
-    };
-}
-
+// Giriş Kontrolü: Giriş yapmamışsa index'e at
 onAuthStateChanged(auth, (user) => {
     if (!user) {
-        window.location.href = "../../index.html";
+        window.location.href = "../../../index.html";
     }
 });

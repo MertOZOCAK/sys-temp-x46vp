@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geliştiriliyor | Z-Pazar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: blink 3s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .dev-card {
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .neon-text {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(67, 97, 238, 0.5);
+            margin-bottom: 30px;
+            animation: flicker 3s infinite alternate;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 0 auto 25px;
+            border-radius: 0% 50% 0% 50%;
+            color: white;
+            animation: breathe 2.5s infinite alternate;
+        }
+
+        @keyframes breathe {
+            from {
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+
+            to {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            }
+        }
+
+        /* Güncelleme Butonu Gelişmiş Efektler */
+        .update-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .update-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .update-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Yeni Yumuşak Geçişli Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            /* Başlangıçta görünmez */
+            backdrop-filter: blur(0px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            pointer-events: none;
+            /* Gizliyken tıklamaları engeller */
+            transition: background 0.4s ease, backdrop-filter 0.4s ease;
+        }
+
+        /* Overlay Aktif Olduğunda */
+        .modal-overlay.active {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            pointer-events: auto;
+            /* Aktifken tıklanabilir */
+        }
+
+        /* .>o>O Küçüklükten Büyüklüğe Şişme Efekti (Cubic-Bezier ile) */
+        .modal-card {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #334155;
+            text-align: left;
+            opacity: 0;
+            transform: scale(0.3);
+            /* Başlangıçta çok küçük . */
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+
+        /* Modal Kartı Aktif Olduğunda */
+        .modal-overlay.active .modal-card {
+            opacity: 1;
+            transform: scale(1);
+            /* Tam boyut O */
+        }
+
+        @keyframes flicker {
+
+            0%,
+            19.999%,
+            22%,
+            62.999%,
+            64%,
+            64.999%,
+            70%,
+            100% {
+                opacity: 1;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(67, 97, 238, 0.5);
+            }
+
+            20%,
+            21.999%,
+            63%,
+            63.999%,
+            65%,
+            69.999% {
+                opacity: 0.7;
+                text-shadow: none;
+            }
+        }
+
+        h2 {
+            font-weight: 700;
+        }
+
+        p {
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="dev-card">
+        <div class="neon-text">Z-PAZAR</div>
+        <div class="icon-circle"><i class="bi bi-code-square"></i></div>
+        <h2>Kod Satırları İşleniyor</h2>
+        <p>Bu bölümü en iyi deneyim için geliştiriyoruz. Çok yakında buradayız!</p>
+
+        <button class="update-btn" onclick="toggleModal()">Güncelleme Notları</button>
+    </div>
+
+    <div class="modal-overlay" id="updateModal" onclick="toggleModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <h4 class="mb-3" id="versionTitle" style="color:white;">Yükleniyor...</h4>
+        
+        <ul id="notesList" style="color: #94a3b8; padding-left: 20px;">
+            </ul>
+        
+        <button class="update-btn" style="width:100%" onclick="toggleModal()">Kapat</button>
+    </div>
+</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwXYbUjJr20WCrqhuNbPhiUA1oleeUSuQ",
+            authDomain: "z-pazar.firebaseapp.com",
+            projectId: "z-pazar",
+            storageBucket: "z-pazar.firebasestorage.app",
+            messagingSenderId: "185640177672",
+            appId: "1:185640177672:web:6cb085e5474291d12d01bd"
+        };
+
+        const db = getFirestore(initializeApp(firebaseConfig));
+        const updatesDocRef = doc(db, "appgunnot", "version_control");
+
+        // Yıldız animasyonu
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 40; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 2.5 + 'px';
+            star.style.height = star.style.width;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Modal açma/kapama
+        window.toggleModal = () => {
+            document.getElementById('updateModal').classList.toggle('active');
+        };
+
+        // Firebase'den verileri canlı çekme
+        onSnapshot(updatesDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const version = data.currentVersion || "v1.0";
+                const safeVersionKey = "notes_" + version.replace(/\./g, '_');
+                const notes = data[safeVersionKey] || [];
+
+                // Başlığı güncelle
+                document.getElementById('versionTitle').innerText = `Sürüm (${version}) Yenilikleri;`;
+
+                // Notları liste haline getir
+                const listContainer = document.getElementById('notesList');
+                if (notes.length > 0) {
+                    listContainer.innerHTML = notes.map(note => `<li>${note}</li>`).join('');
+                } else {
+                    listContainer.innerHTML = `<li>Henüz not eklenmedi.</li>`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

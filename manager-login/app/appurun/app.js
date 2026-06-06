@@ -33,21 +33,9 @@ let deleteId = null;
 // Giriş Kontrolü: Giriş yapmamışsa index'e at
 onAuthStateChanged(auth, (user) => {
     if (!user) {
-        window.location.href = "../../index.html";
+        window.location.href = "../../../index.html";
     }
 });
-
-// Çıkış İşlemi
-if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-        try {
-            await signOut(auth);
-            window.location.href = "../../../index.html";
-        } catch (err) {
-            showToast("Çıkış yapılırken hata oluştu!", false);
-        }
-    };
-}
 
 // Kategori "Diğer" Dinamiği
 window.toggleOtherInput = function () {
