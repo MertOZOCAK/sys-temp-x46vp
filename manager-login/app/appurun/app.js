@@ -35,10 +35,21 @@ onAuthStateChanged(auth, (user) => {
     console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
         console.log("Redirecting to index...");
-        // Mutlak path kullan
-        window.location.href = window.location.origin + "/index.html";
-        // Alternatif olarak:
-        // window.location.href = "/index.html";
+        // Güvenli yönlendirme: eğer URL içinde 'manager-login' varsa onun üstüne
+        // çıkıp site kökündeki index.html'e git; yoksa GitHub Pages repo köküne git.
+        const getSiteIndexPath = () => {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const adminIndex = parts.indexOf('manager-login');
+            if (adminIndex > -1) {
+                const baseParts = parts.slice(0, adminIndex);
+                if (baseParts.length === 0) return '/index.html';
+                return '/' + baseParts.join('/') + '/index.html';
+            }
+            if (parts.length === 0) return '/index.html';
+            return '/' + parts[0] + '/index.html';
+        };
+        const indexPath = getSiteIndexPath();
+        window.location.href = window.location.origin + indexPath;
     }
 });
 
@@ -104,6 +115,7 @@ adminProductList.addEventListener('click', async (e) => {
             const p = docSnap.data();
             document.getElementById('pName').value = p.title;
             document.getElementById('pPrice').value = p.price;
+            document.getElementById('pDiscount').value = p.discount || "";
             document.getElementById('pDesc').value = p.description;
             document.getElementById('productImage1').value = p.images[0] || "";
             document.getElementById('productImage2').value = p.images[1] || "";
@@ -147,6 +159,7 @@ productForm.addEventListener('submit', async (e) => {
         title: document.getElementById('pName').value,
         category: finalCategory,
         price: Number(document.getElementById('pPrice').value),
+        discount: Number(document.getElementById('pDiscount').value) || 0,
         description: document.getElementById('pDesc').value,
         images: [document.getElementById('productImage1').value, document.getElementById('productImage2').value || ""],
         updatedAt: serverTimestamp()
@@ -169,6 +182,7 @@ productForm.addEventListener('submit', async (e) => {
 function resetForm() {
     productForm.reset();
     document.getElementById('otherCategoryInput').classList.add('d-none');
+    document.getElementById('pDiscount').value = "";
     editIdInput.value = "";
     formTitle.innerText = "Yeni Ürün Ekle";
     submitBtn.innerText = "Ürünü Yayınla";

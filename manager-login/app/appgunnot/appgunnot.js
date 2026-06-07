@@ -22,7 +22,19 @@ onAuthStateChanged(auth, (user) => {
     console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
         console.log("Redirecting to index...");
-        window.location.href = window.location.origin + "/index.html";
+        const getSiteIndexPath = () => {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            const adminIndex = parts.indexOf('manager-login');
+            if (adminIndex > -1) {
+                const baseParts = parts.slice(0, adminIndex);
+                if (baseParts.length === 0) return '/index.html';
+                return '/' + baseParts.join('/') + '/index.html';
+            }
+            if (parts.length === 0) return '/index.html';
+            return '/' + parts[0] + '/index.html';
+        };
+        const indexPath = getSiteIndexPath();
+        window.location.href = window.location.origin + indexPath;
     }
 });
 

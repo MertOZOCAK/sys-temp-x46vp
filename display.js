@@ -54,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         productList.innerHTML = "";
 
         products.forEach((product) => {
+            const discountPercent = Number(product.discount) || 0;
+            const safeDiscount = Math.max(0, Math.min(100, discountPercent));
+            const discountedPrice = safeDiscount > 0 ? product.price * (1 - safeDiscount / 100) : product.price;
+            const displayPrice = Math.round(discountedPrice);
+            const hasDiscount = safeDiscount > 0;
+
             const col = document.createElement('div');
             col.className = "col";
             col.innerHTML = `
@@ -62,8 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-body d-flex flex-column">
                     <span class="badge bg-light text-primary rounded-pill mb-2 align-self-start border">${product.category || 'Genel'}</span>
                     <h6 class="card-title fw-bold">${product.title}</h6>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="product-price text-primary fw-bold">${new Intl.NumberFormat('tr-TR').format(product.price)} TL</span>
+                    <div class="mt-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="product-price text-primary fw-bold">${new Intl.NumberFormat('tr-TR').format(displayPrice)} TL</span>
+                            ${hasDiscount ? `<span class="badge bg-success text-white rounded-pill">%${safeDiscount} İndirim</span>` : ''}
+                        </div>
+                        ${hasDiscount ? `<div class="text-muted small text-decoration-line-through">${new Intl.NumberFormat('tr-TR').format(product.price)} TL</div>` : ''}
+                    </div>
+                    <div class="mt-auto d-flex justify-content-end">
                         <button class="btn btn-primary btn-sm rounded-pill px-3 add-to-cart-btn">Sepete Ekle</button>
                     </div>
                 </div>
@@ -72,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Butonu hemen burada yakalıyoruz
             const btn = col.querySelector('.add-to-cart-btn');
             btn.addEventListener('click', () => {
-                cart.push({ title: product.title, price: product.price });
+                cart.push({ title: product.title, price: displayPrice });
                 updateCart();
                 // Sepet alanını göster ve oraya kaydır
                 document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
@@ -95,7 +107,10 @@ window.addToCart = (product) => {
         const currentSelection = categoryFilter.value;
         const categories = [...new Set(products.map(p => p.category).filter(c => c))];
 
-        categoryFilter.innerHTML = `<option value="all">Tüm Kategoriler</option>`;
+        categoryFilter.innerHTML = `
+            <option value="all">Tüm Kategoriler</option>
+            <option value="discounted">İndirimli</option>
+        `;
         categories.forEach(cat => {
             categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
         });
@@ -111,7 +126,9 @@ window.addToCart = (product) => {
 
         let results = allProducts.filter(p => {
             const matchesSearch = p.title.toLowerCase().includes(term) || (p.category && p.category.toLowerCase().includes(term));
-            const matchesCategory = selectedCat === "all" || p.category === selectedCat;
+            const matchesCategory = selectedCat === "all"
+                || selectedCat === "discounted" && Number(p.discount) > 0
+                || p.category === selectedCat;
             const matchesPrice = p.price >= minP && p.price <= maxP;
             return matchesSearch && matchesCategory && matchesPrice;
         });
