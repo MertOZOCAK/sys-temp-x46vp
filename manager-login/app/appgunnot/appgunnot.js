@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCwXYbUjJr20WCrqhuNbPhiUA1oleeUSuQ",
@@ -12,8 +13,18 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 const updatesDocRef = doc(db, "appgunnot", "version_control");
+
+// Giriş Kontrolü: Giriş yapmamışsa index'e at
+onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
+    if (!user) {
+        console.log("Redirecting to index...");
+        window.location.href = window.location.origin + "/index.html";
+    }
+});
 
 let globalActiveVersion = "";
 let localNotesData = {};

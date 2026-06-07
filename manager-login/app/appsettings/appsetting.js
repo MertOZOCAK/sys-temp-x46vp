@@ -18,7 +18,9 @@ const auth = getAuth(app);
 
 // Giriş Kontrolü: Giriş yapmamışsa index'e at
 onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
-        window.location.href = "../../../index.html";
+        console.log("Redirecting to index...");
+        window.location.href = window.location.origin + "/index.html";
     }
 });

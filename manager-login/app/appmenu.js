@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Firebase Yapılandırması (Kendi bilgilerini buraya da eklemelisin)
@@ -30,18 +29,10 @@ if (logoutBtn) {
     };
 }
 
-// Oturum durumu kontrol (sayfaya her erişimde kontrol et)
 onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
-        // Oturumu kapalı ise login sayfasına yönlendir
-        window.location.href = "../../index.html";
-    } else {
-        // Oturumu açık ise devam et (isteğe bağlı: konsola yazdır)
-        console.log("Kullanıcı oturumu açık:", user.email);
-        // Sayfa yüklenmesini serbest bırak
-        document.body.style.display = "block";
+        console.log("Redirecting to index...");
+        window.location.href = window.location.origin + "/index.html";
     }
 });
-
-// Sayfa yükleme sırasında beklet (oturum kontrolü yapılana kadar)
-document.body.style.display = "none";

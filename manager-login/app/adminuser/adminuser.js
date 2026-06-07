@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Firebase Yapılandırması (Orijinal config bilgilerin korundu)
 const firebaseConfig = {
@@ -17,6 +17,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const adminsCol = collection(db, "admins");
+
+// Giriş Kontrolü: Giriş yapmamışsa index'e at
+onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
+    if (!user) {
+        console.log("Redirecting to index...");
+        window.location.href = window.location.origin + "/index.html";
+    }
+});
 
 let editId = null;
 let deleteId = null;

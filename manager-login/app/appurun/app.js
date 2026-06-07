@@ -32,8 +32,13 @@ let deleteId = null;
 
 // Giriş Kontrolü: Giriş yapmamışsa index'e at
 onAuthStateChanged(auth, (user) => {
+    console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
-        window.location.href = "../../../index.html";
+        console.log("Redirecting to index...");
+        // Mutlak path kullan
+        window.location.href = window.location.origin + "/index.html";
+        // Alternatif olarak:
+        // window.location.href = "/index.html";
     }
 });
 
