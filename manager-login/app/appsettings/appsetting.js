@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"; // Importlara ekledik
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Firebase Yapılandırması (Kendi bilgilerini buraya da eklemelisin)
 const firebaseConfig = {
@@ -21,6 +21,8 @@ onAuthStateChanged(auth, (user) => {
     console.log("Auth state changed:", user ? "Giriş yapılı" : "Giriş yapılmadı");
     if (!user) {
         console.log("Redirecting to index...");
+        // Güvenli yönlendirme: eğer URL içinde 'manager-login' varsa onun üstüne
+        // çıkıp site kökündeki index.html'e git; yoksa GitHub Pages repo köküne git.
         const getSiteIndexPath = () => {
             const parts = window.location.pathname.split('/').filter(Boolean);
             const adminIndex = parts.indexOf('manager-login');
