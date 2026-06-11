@@ -1,52 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-window.addToCart = async function(productId) {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    // Eğer kullanıcı giriş yapmadıysa anonim bir sepet veya uyarı mekanizması kurulabilir.
-    // Şimdilik test amaçlı 'test_user' veya aktif kullanıcı id'sini baz alıyoruz.
-    const userId = currentUser ? currentUser.uid : "test_user"; 
-    
-    // Ürün dizisinden ilgili ürünü bulalım
-    const product = localProductsArray.find(p => p.id === productId);
-    if (!product) return;
-
-    const basePrice = parseFloat(product.price || 0);
-    const discountPercent = Number(product.discount || 0);
-    const currentPrice = discountPercent > 0 ? basePrice * (1 - discountPercent / 100) : basePrice;
-
-    const cartRef = doc(db, "carts", userId, "items", productId);
-    
-    try {
-        const cartSnap = await getDoc(cartRef);
-        if (cartSnap.exists()) {
-            // Ürün sepette varsa adedi 1 arttır
-            const currentQty = cartSnap.data().quantity || 1;
-            await setDoc(cartRef, { quantity: currentQty + 1 }, { merge: true });
-        } else {
-            // Ürün sepette yoksa yeni ekle
-            await setDoc(cartRef, {
-                id: productId,
-                title: product.title || product.name,
-                price: Math.round(currentPrice),
-                image: (product.images && product.images[0]) || product.image || product.imageUrl || "",
-                quantity: 1,
-                seller: product.seller || "Z-Pazar Mağaza"
-            });
-        }
-        
-        // Üst bar sayacını canlandır
-        if (typeof window.animateCartBump === "function") {
-            window.animateCartBump();
-        }
-        alert("Ürün başarıyla sepete eklendi!");
-    } catch (error) {
-        console.error("Sepete eklenirken hata oluştu: ", error);
-    }
-};
-
 // Orijinal Firebase Yapılandırman
 const firebaseConfig = {
     apiKey: "AIzaSyCwXYbUjJr20WCrqhuNbPhiUA1oleeUSuQ",
@@ -60,6 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const CART_KEY = 'zPazarCart';
 let localProductsArray = [];
 let activeCategoryFilter = "all"; 
 
@@ -68,6 +23,56 @@ const productRow = document.getElementById("productRow");
 const searchInput = document.getElementById("searchInput");
 const dropdownProductsContainer = document.getElementById("dropdownProductsContainer");
 const smartCategoryBar = document.getElementById("smartCategoryBar");
+
+function getLocalCart() {
+    const raw = localStorage.getItem(CART_KEY);
+    return raw ? JSON.parse(raw) : [];
+}
+
+function saveLocalCart(cart) {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function updateCartBadge() {
+    const badge = document.getElementById('cartCountBadge');
+    if (!badge) return;
+    const totalQty = getLocalCart().reduce((sum, item) => sum + (item.quantity || 0), 0);
+    badge.innerText = totalQty;
+}
+
+const cartNotificationCloseBtn = document.getElementById('cartNotificationClose');
+if (cartNotificationCloseBtn) {
+    cartNotificationCloseBtn.onclick = () => {
+        const modal = document.getElementById('cartNotificationModal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+        clearTimeout(cartNotificationTimeout);
+    };
+}
+
+function addProductToLocalCart(product) {
+    const cart = getLocalCart();
+    const existingItem = cart.find(item => item.id === product.id);
+
+    if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 0) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            title: product.title || product.name || "İsimsiz Ürün",
+            price: Math.round(parseFloat(product.price || 0) * (1 - (Number(product.discount || 0) / 100))),
+            image: (product.images && product.images[0]) || product.image || product.imageUrl || "https://via.placeholder.com/120",
+            quantity: 1,
+            seller: product.seller || "Z-Pazar"
+        });
+    }
+
+    saveLocalCart(cart);
+    updateCartBadge();
+}
+
+updateCartBadge();
 
 // Trendyol Stili Premium Canlı Gradyanlar
 const trendyolGradients = [
@@ -390,7 +395,7 @@ function applyFiltersAndRender() {
                         <div class="price-box">
                             ${priceBoxHTML}
                         </div>
-                        <button class="quick-add-btn" onclick="window.animateCartBump()">
+                        <button class="quick-add-btn" onclick="window.addToCart('${product.id}')">
                             <i class="bi bi-cart-plus-fill"></i> Sepete Ekle
                         </button>
                     </div>
@@ -466,8 +471,6 @@ function renderSearchDropdown(products) {
 window.animateCartBump = function() {
     const badge = document.getElementById('cartCountBadge');
     if (!badge) return;
-    let currentCount = parseInt(badge.textContent) || 0;
-    badge.textContent = currentCount + 1;
 
     badge.classList.add('bump');
     setTimeout(() => {
@@ -476,69 +479,49 @@ window.animateCartBump = function() {
 };
 
 // =========================================================================
-// SADECE EN ALTA EKLENECEK GÜVENLİ SEPET VE SAYAÇ ENTEGRASYONU
-// (YUKARIDAKİ HİÇBİR KODU SİLMEZ, KIRPMAZ VEYA BOZMAZ)
+// SEPET VE SAYAÇ ENTEGRASYONU (LOCALSTORAGE)
 // =========================================================================
 
-// Sayfa yüklendiğinde sepetteki ürün adedini Firestore'dan canlı dinleyip badge'e basar
-(function() {
-    // onSnapshot ve collection fonksiyonlarını üstteki db değişkenine bağlayarak güvenle çalıştırıyoruz
-    const cartItemsRef = collection(db, "carts", "test_user", "items");
-    onSnapshot(cartItemsRef, (snapshot) => {
-        let totalQty = 0;
-        snapshot.forEach((docSnap) => {
-            totalQty += (docSnap.data().quantity || 1);
-        });
-        const badge = document.getElementById("cartCountBadge");
-        if (badge) {
-            badge.innerText = totalQty;
-        }
-    });
-})();
+let cartNotificationTimeout = null;
 
-// Ürün kartlarındaki "Sepete Ekle" butonunun tetiklediği fonksiyon
-window.addToCart = async function(productId) {
-    // Yukarıdaki localProductsArray dizisinden tıklanan ürünü buluyoruz
-    const product = localProductsArray.find(p => p.id === productId);
-    if (!product) {
-        console.error("Ürün yerel dizide bulunamadı:", productId);
+function showCartNotification(message, status = 'success') {
+    const modal = document.getElementById('cartNotificationModal');
+    const title = document.getElementById('cartNotificationTitle');
+    const body = document.getElementById('cartNotificationMessage');
+    const icon = document.getElementById('cartNotificationIcon');
+    const card = modal ? modal.querySelector('.cart-notification-card') : null;
+
+    if (!modal || !title || !body || !icon || !card) {
+        console.warn('Bildirim modalı bulunamadı, fallback alert kullanılıyor.');
+        alert(message);
         return;
     }
 
-    const basePrice = parseFloat(product.price || 0);
-    const discountPercent = Number(product.discount || 0);
-    const currentPrice = discountPercent > 0 ? basePrice * (1 - discountPercent / 100) : basePrice;
+    title.textContent = status === 'success' ? 'Başarılı' : 'Hata';
+    body.textContent = message;
+    icon.textContent = status === 'success' ? '✓' : '⚠';
+    card.classList.toggle('error', status !== 'success');
+    modal.classList.add('show');
 
-    // Üstteki importları bozmamak için gerekli Firebase fonksiyonlarını tarayıcı modülünden dinamik çağırıyoruz
-    const { doc, setDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    clearTimeout(cartNotificationTimeout);
+    cartNotificationTimeout = setTimeout(() => {
+        modal.classList.remove('show');
+    }, 2600);
+}
 
-    const userId = "test_user"; 
-    const cartRef = doc(db, "carts", userId, "items", productId);
-    
-    try {
-        const cartSnap = await getDoc(cartRef);
-        if (cartSnap.exists()) {
-            // Ürün sepette zaten varsa miktarını 1 artırıyoruz
-            const currentQty = cartSnap.data().quantity || 1;
-            await setDoc(cartRef, { quantity: currentQty + 1 }, { merge: true });
-        } else {
-            // Ürün sepette yoksa sıfırdan oluşturuyoruz
-            await setDoc(cartRef, {
-                id: productId,
-                title: product.title || product.name || "İsimsiz Ürün",
-                price: Math.round(currentPrice),
-                image: (product.images && product.images[0]) || product.image || product.imageUrl || "",
-                quantity: 1,
-                seller: product.seller || "Z-Pazar Mağaza"
-            });
-        }
-        
-        // Sepet ikonu animasyonunu tetikle
-        if (typeof window.animateCartBump === "function") {
-            window.animateCartBump();
-        }
-        alert("Ürün başarıyla sepetinize eklendi!");
-    } catch (error) {
-        console.error("Sepete eklenirken hata oluştu: ", error);
+window.addToCart = function(productId) {
+    const product = localProductsArray.find(p => p.id === productId);
+    if (!product) {
+        console.error("Ürün yerel dizide bulunamadı:", productId);
+        showCartNotification("Ürün sepete eklenemedi. Lütfen sayfayı yenileyin ve tekrar deneyin.", 'error');
+        return;
     }
+
+    addProductToLocalCart(product);
+
+    if (typeof window.animateCartBump === "function") {
+        window.animateCartBump();
+    }
+
+    showCartNotification("Ürün başarıyla sepetinize eklendi!", 'success');
 };
