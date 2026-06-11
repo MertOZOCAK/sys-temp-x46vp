@@ -153,8 +153,8 @@ adminCouponList.addEventListener('click', async (e) => {
         const snap = await getDoc(doc(db, "coupons", id));
         if (snap.exists()) {
             const c = snap.data();
-            document.getElementById('cName').value = (c.name || "") + " (Kopya)";
-            document.getElementById('cCode').value = c.code + "2";
+            document.getElementById('cName').value = (c.name || "");
+            document.getElementById('cCode').value = c.code;
             document.getElementById('cDiscount').value = c.discount;
             cTargetProduct.value = c.targetProduct;
             editIdInput.value = ""; 
