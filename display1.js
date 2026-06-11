@@ -198,7 +198,6 @@ if (topbarListEl) {
 function buildTrendyolCategoryBar(stats, globalMin) {
     if (!smartCategoryBar) return;
     
-    // Taşıma sorunlarını çözmek ve dikeyde rozetlerin sığması için üst boşluğu genişletip ortalıyoruz
     smartCategoryBar.innerHTML = "";
     smartCategoryBar.className = "d-flex gap-4 overflow-x-auto pb-3 pt-3 px-2 justify-content-start justify-content-md-center align-items-center";
 
@@ -208,7 +207,7 @@ function buildTrendyolCategoryBar(stats, globalMin) {
     // 1. "Tümü" Kategorisi
     const allHTML = `
         <div class="text-center" style="min-width: 85px; cursor: pointer; padding-top: 4px;">
-            <a href="javascript:void(0)" class="cat-pill-btn d-flex flex-column align-items-center text-decoration-none" data-cat="all" style="transition: all 0.3s ease;">
+            <a href="#" class="cat-pill-btn d-flex flex-column align-items-center text-decoration-none" data-cat="all" style="transition: all 0.3s ease;">
                 <div class="d-flex align-items-center justify-content-center text-white rounded-circle position-relative" 
                      style="width: 64px; height: 64px; font-size: 22px; background: linear-gradient(135deg, #ff6000 0%, #ff8f43 100%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: ${allIsActive ? '0 8px 22px rgba(255,96,0,0.35), inset 0 0 0 2px #fff' : '0 4px 12px rgba(0,0,0,0.06)'}; ${allIsActive ? 'transform: scale(1.06) translateY(-4px);' : ''}">
                     <i class="bi bi-stars"></i>
@@ -226,7 +225,7 @@ function buildTrendyolCategoryBar(stats, globalMin) {
 
     // 2. Dinamik Firebase Kategorileri
     Object.keys(stats).forEach((cat, index) => {
-        const lowerCat = cat.toLowerCase();
+        const lowerCat = cat.toLowerCase().trim();
         const isSelected = activeCategoryFilter === lowerCat;
         const shortLetters = cat.substring(0, 2).toUpperCase();
         const currentGradient = trendyolGradients[index % trendyolGradients.length];
@@ -236,14 +235,14 @@ function buildTrendyolCategoryBar(stats, globalMin) {
 
         const catHTML = `
             <div class="text-center" style="min-width: 85px; cursor: pointer; padding-top: 4px;">
-                <a href="javascript:void(0)" class="cat-pill-btn d-flex flex-column align-items-center text-decoration-none" data-cat="${lowerCat}" style="transition: all 0.3s ease;">
+                <a href="#" class="cat-pill-btn d-flex flex-column align-items-center text-decoration-none" data-cat="${lowerCat}" style="transition: all 0.3s ease;">
                     <div class="d-flex align-items-center justify-content-center text-white rounded-circle fw-bold position-relative" 
                          style="width: 64px; height: 64px; font-size: 16px; letter-spacing: 0.5px; background: ${currentGradient}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: ${isSelected ? '0 8px 22px rgba(0,0,0,0.18), inset 0 0 0 2px #fff' : '0 4px 12px rgba(0,0,0,0.06)'}; ${isSelected ? 'transform: scale(1.06) translateY(-4px); outline: 2px solid #ff6000; outline-offset: 1px;' : ''}">
                         ${shortLetters}
-                                                <span class="position-absolute badge rounded-pill"
-                                                            style="font-size: 11px; top: -8px; right: -8px; padding: 2px 7px; border: 2px solid #fff; z-index: 10; font-weight: 700; background-color: rgba(255,255,255,0.98); color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.06); border-color: rgba(15,23,42,0.06); min-width: 30px; text-align:center;">
-                                                        ${catCount > 99 ? '99+' : catCount}
-                                                </span>
+                        <span class="position-absolute badge rounded-pill"
+                              style="font-size: 11px; top: -8px; right: -8px; padding: 2px 7px; border: 2px solid #fff; z-index: 10; font-weight: 700; background-color: rgba(255,255,255,0.98); color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.06); border-color: rgba(15,23,42,0.06); min-width: 30px; text-align:center;">
+                            ${catCount > 99 ? '99+' : catCount}
+                        </span>
                     </div>
                     <span class="mt-2 text-dark fw-semibold" style="font-size: 12px; white-space: nowrap; transition: color 0.2s; ${isSelected ? 'color: #ff6000 !important; font-weight: 700;' : ''}">${cat}</span>
                     <small class="text-success fw-bold d-block" style="font-size: 9px; opacity: 0.9; line-height: 1.2;">${catMinPrice} TL'den<br>Başlayan Fiyatlarla</small>
@@ -276,14 +275,26 @@ function buildTrendyolCategoryBar(stats, globalMin) {
 
         btn.addEventListener("click", (e) => {
             e.preventDefault();
-            activeCategoryFilter = btn.getAttribute("data-cat");
+            
+            const targetBtn = e.target.closest('.cat-pill-btn');
+            if (!targetBtn) return;
+
+            activeCategoryFilter = targetBtn.getAttribute("data-cat");
 
             applyFiltersAndRender();
             buildTrendyolCategoryBar(stats, globalMin);
 
-            const productRowEl = document.getElementById("productRow");
-            if (productRowEl) {
-                productRowEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            // Geliştirilmiş Kaydırma Alanı Yönetimi
+            const targetVisualRow = document.getElementById("productRow") || document.getElementById("smartCategoryBar");
+            if (targetVisualRow) {
+                const offset = 120; // Yapışkan navbar varsa üstte boşluk bırakmak için offset değeri
+                const elementPosition = targetVisualRow.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
             }
         });
     });
@@ -374,20 +385,27 @@ function applyFiltersAndRender() {
             starsHTML += i <= Math.floor(parseFloat(rating)) ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>';
         }
 
+        // Ürün detay sayfasının linki (?id= parametresiyle)
+        const detailLink = `detay.html?id=${product.id}`;
+
         const cardHTML = `
             <div class="col">
                 <div class="product-card">
                     ${discountBadgeHTML}
                     <button class="fav-btn"><i class="bi bi-heart"></i></button>
                     
-                    <div class="product-img-wrapper">
-                        <img src="${mainImg}" class="img-main" alt="${finalName}" onerror="this.src='${defaultImg}'">
-                        <img src="${hoverImg}" class="img-hover" alt="${finalName} Detay" onerror="this.src='${defaultImg}'">
-                    </div>
+                    <a href="${detailLink}" class="text-decoration-none product-card-link">
+                        <div class="product-img-wrapper">
+                            <img src="${mainImg}" class="img-main" alt="${finalName}" onerror="this.src='${defaultImg}'">
+                            <img src="${hoverImg}" class="img-hover" alt="${finalName} Detay" onerror="this.src='${defaultImg}'">
+                        </div>
+                    </a>
                     
                     <div class="product-info">
-                        <div class="product-brand">${finalBrand}</div>
-                        <div class="product-title" title="${finalName}">${finalName}</div>
+                        <a href="${detailLink}" class="text-decoration-none text-dark">
+                            <div class="product-brand">${finalBrand}</div>
+                            <div class="product-title" title="${finalName}">${finalName}</div>
+                        </a>
                         <div class="rating-stars">
                             ${starsHTML}
                             <span class="rating-count">(${reviews})</span>
@@ -455,7 +473,7 @@ function renderSearchDropdown(products) {
         }
 
         const itemHTML = `
-            <a href="#" class="suggested-item">
+            <a href="detay.html?id=${p.id}" class="suggested-item text-decoration-none">
                 <img src="${imgVal}" alt="${nameVal}" onerror="this.src='${defaultImg}'">
                 <div class="d-flex flex-column">
                     <span>${nameVal}</span>
