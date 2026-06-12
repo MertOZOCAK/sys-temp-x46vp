@@ -83,6 +83,8 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
         }
 
+
+
         .main-header h3 {
             color: var(--main-dark) !important;
         }
@@ -618,7 +620,13 @@
                         <div class="search-box">
                             <input type="text" id="searchInput" class="form-control"
                                 placeholder="Aradığınız ürün, kategori veya markayı yazınız...">
-                            <i class="bi bi-search"></i>
+                            <div id="searchIconContainer" class="position-absolute end-0"
+                                style="display: grid; place-items: center; top: 50%; transform: translateY(-50%); margin-right: 12px; width: 24px; height: 24px; cursor: pointer; z-index: 10;">
+                                <i id="searchIcon" class="bi bi-search"
+                                    style="grid-area: 1 / 1; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 1; transform: rotate(0deg) scale(1); color: #ff6000; font-size: 16px; line-height: 1; position: relative; top: -1px; left: 2px;"></i>
+                                <i id="clearIcon" class="bi bi-x-lg"
+                                    style="grid-area: 1 / 1; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; transform: rotate(-90deg) scale(0); pointer-events: none; color: #ff6000; font-size: 16px; line-height: 1;"></i>
+                            </div>
 
                             <div class="search-dropdown" id="searchDropdown">
                                 <div class="small fw-bold text-secondary mb-2">

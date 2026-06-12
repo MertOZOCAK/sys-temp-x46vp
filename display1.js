@@ -424,6 +424,57 @@ function applyFiltersAndRender() {
     }
 }
 
+// Arama Çubuğu İkon ve Dönüşüm Yönetimi
+const searchIcon = document.getElementById("searchIcon");
+const clearIcon = document.getElementById("clearIcon");
+const searchIconContainer = document.getElementById("searchIconContainer");
+
+if (searchInput && searchIcon && clearIcon && searchIconContainer) {
+    // Giriş alanına yazı yazıldıkça tetiklenen animasyonlar
+    searchInput.addEventListener("input", () => {
+        if (searchInput.value.trim().length > 0) {
+            // Büyüteç kendi ekseninde dönerek küçülür ve gizlenir
+            searchIcon.style.opacity = "0";
+            searchIcon.style.transform = "rotate(90deg) scale(0)";
+            
+            // X ikonu dönerek görünür hale gelir ve tıklanabilir olur
+            clearIcon.style.opacity = "1";
+            clearIcon.style.transform = "rotate(0deg) scale(1)";
+            clearIcon.style.pointerEvents = "auto";
+        } else {
+            // Alan boşaldığında büyüteç geri gelir
+            searchIcon.style.opacity = "1";
+            searchIcon.style.transform = "rotate(0deg) scale(1)";
+            
+            // X ikonu tersine dönerek gizlenir
+            clearIcon.style.opacity = "0";
+            clearIcon.style.transform = "rotate(-90deg) scale(0)";
+            clearIcon.style.pointerEvents = "none";
+        }
+    });
+
+    // Turuncu X ikonuna tıklandığında alanı temizleme mantığı
+    searchIconContainer.addEventListener("click", () => {
+        if (searchInput.value.length > 0) {
+            searchInput.value = ""; // Metni temizle
+            
+            // İkonları ilk konumlarına ve animasyonlarına geri döndür
+            searchIcon.style.opacity = "1";
+            searchIcon.style.transform = "rotate(0deg) scale(1)";
+            
+            clearIcon.style.opacity = "0";
+            clearIcon.style.transform = "rotate(-90deg) scale(0)";
+            clearIcon.style.pointerEvents = "none";
+            
+            // Firebase filtrelemesini sıfırlamak için input olayını tetikle
+            searchInput.dispatchEvent(new Event("input"));
+            
+            // Kullanıcının yazmaya devam edebilmesi için odağı inputta tut
+            searchInput.focus();
+        }
+    });
+}
+
 // --- CANLI ARAMA TAKİPÇİSİ ---
 if (searchInput) {
     searchInput.addEventListener("input", (e) => {
