@@ -303,17 +303,11 @@ function buildTrendyolCategoryBar(stats, globalMin) {
 // --- FİLTRELEME VE VİTRİN YENİLEME FONKSİYONU ---
 function applyFiltersAndRender() {
     productRow.innerHTML = "";
-    const keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
 
+    // Vitrindeki ürünlerin arama teriminden etkilenmemesi için sadece aktif kategori filtresini uyguluyoruz:
     const filtered = localProductsArray.filter(product => {
         const productCategory = (product.category || "").toLowerCase().trim();
-        const productName = (product.title || product.name || "").toLowerCase();
-        const productBrand = (product.brand || product.marka || "").toLowerCase();
-
-        const matchesCategory = (activeCategoryFilter === "all" || productCategory === activeCategoryFilter);
-        const matchesSearch = (keyword === "" || productName.includes(keyword) || productBrand.includes(keyword) || productCategory.includes(keyword));
-
-        return matchesCategory && matchesSearch;
+        return (activeCategoryFilter === "all" || productCategory === activeCategoryFilter);
     });
 
     if (filtered.length === 0) {
@@ -321,6 +315,7 @@ function applyFiltersAndRender() {
         return;
     }
 
+    // Ürünler üzerinde hiçbir sıralama (sort) değişikliği yapmadan doğrudan ekrana basıyoruz:
     filtered.forEach((product) => {
         const finalName = product.title || product.name || "İsimsiz Ürün";
         const rawPrice = product.price || product.productPrice || 0;
@@ -385,7 +380,6 @@ function applyFiltersAndRender() {
             starsHTML += i <= Math.floor(parseFloat(rating)) ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>';
         }
 
-        // Ürün detay sayfasının linki (?id= parametresiyle)
         const detailLink = `detay.html?id=${product.id}`;
 
         const cardHTML = `
@@ -423,6 +417,8 @@ function applyFiltersAndRender() {
         productRow.insertAdjacentHTML("beforeend", cardHTML);
     });
 
+    // Arama kutusu tamamen boş olduğunda dropdown paneline varsayılan önerileri basmak için bu kontrolü sonda tutuyoruz:
+    const keyword = searchInput ? searchInput.value.toLowerCase().trim() : "";
     if (keyword === "") {
         renderSearchDropdown(localProductsArray.slice(0, 3));
     }
@@ -443,6 +439,25 @@ if (searchInput) {
             return nameVal.includes(keyword) || catVal.includes(keyword) || brandVal.includes(keyword);
         });
 
+        // Açılır kutu (Dropdown) için akıllı sıralama mantığı:
+        if (keyword.length > 0) {
+            filtered.sort((a, b) => {
+                const titleA = (a.title || a.name || "").toLowerCase().trim();
+                const titleB = (b.title || b.name || "").toLowerCase().trim();
+
+                const isExactA = (titleA === keyword);
+                const isExactB = (titleB === keyword);
+                if (isExactA && !isExactB) return -1;
+                if (!isExactA && isExactB) return 1;
+
+                if (titleA.length !== titleB.length) {
+                    return titleA.length - titleB.length;
+                }
+
+                return titleA.localeCompare(titleB, "tr", { sensitivity: "base" });
+            });
+        }
+
         renderSearchDropdown(filtered.slice(0, 4));
     });
 }
@@ -462,7 +477,9 @@ function renderSearchDropdown(products) {
     products.forEach(p => {
         const nameVal = p.title || p.name || "İsimsiz Ürün";
         const basePrice = parseFloat(p.price || 0);
-        const discountPercent = Number(p.discount || 0);
+        
+        // Hem 'discount' hem de 'indirim' alanlarını desteklemek için kontrolü genişletiyoruz:
+        const discountPercent = Number(p.discount || p.indirim || 0);
         const currentPrice = discountPercent > 0 ? basePrice * (1 - discountPercent / 100) : basePrice;
 
         let imgVal = defaultImg;
@@ -472,12 +489,28 @@ function renderSearchDropdown(products) {
             imgVal = p.image || p.imageUrl || defaultImg;
         }
 
+        // İndirim durumuna göre yan yana listelenecek fiyat yapısı:
+        let priceDisplayHTML = "";
+        if (discountPercent > 0) {
+            priceDisplayHTML = `
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <small class="fw-bold" style="color: #ff6000;">${Math.round(currentPrice).toLocaleString('tr-TR')} TL</small>
+                    <small style="text-decoration: line-through; color: #94a3b8; font-size: 11px;">${Math.round(basePrice).toLocaleString('tr-TR')} TL</small>
+                    <small style="color: #ef4444; font-weight: 800; font-size: 11px;">%${discountPercent} İndirim</small>
+                </div>
+            `;
+        } else {
+            priceDisplayHTML = `
+                <small class="fw-bold" style="color: #ff6000;">${Math.round(currentPrice).toLocaleString('tr-TR')} TL</small>
+            `;
+        }
+
         const itemHTML = `
             <a href="detay.html?id=${p.id}" class="suggested-item text-decoration-none">
                 <img src="${imgVal}" alt="${nameVal}" onerror="this.src='${defaultImg}'">
                 <div class="d-flex flex-column">
                     <span>${nameVal}</span>
-                    <small class="text-orange fw-bold" style="color: #ff6000;">${Math.round(currentPrice).toLocaleString('tr-TR')} TL</small>
+                    ${priceDisplayHTML}
                 </div>
             </a>
         `;

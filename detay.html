@@ -7,7 +7,8 @@
     <title>Z-Pazar | Ürün Detayı</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-color: #ff6000;
@@ -100,6 +101,7 @@
         .btn-back {
             transition: all var(--transition-speed) ease;
         }
+
         .btn-back:hover {
             background-color: #e2e8f0;
             color: var(--main-dark);
@@ -159,7 +161,7 @@
             color: var(--main-dark);
             font-size: 20px;
             transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             z-index: 10;
         }
 
@@ -168,15 +170,20 @@
             color: white;
             border-color: var(--main-dark);
             transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
         .nav-arrow:active {
             transform: translateY(-50%) scale(0.92);
         }
 
-        .nav-arrow.prev-arrow { left: 16px; }
-        .nav-arrow.next-arrow { right: 16px; }
+        .nav-arrow.prev-arrow {
+            left: 16px;
+        }
+
+        .nav-arrow.next-arrow {
+            right: 16px;
+        }
 
         /* Küçük Resimler */
         .thumbnail-gallery {
@@ -229,6 +236,32 @@
             transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Butonun tıklanabilir olduğunu belirginleştir ve geçiş süresini ayarla */
+        #btnAddToCart {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        /* Animasyonun kendisi: %50'de biraz küçülecek (0.95 oranında) */
+        @keyframes popEffect {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.95);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* JavaScript ile eklenecek sınıf */
+        .btn-pop {
+            animation: popEffect 0.3s ease-out;
+        }
+
         .btn-orange:hover {
             background-color: #e05500;
             transform: translateY(-3px);
@@ -252,10 +285,12 @@
             z-index: 1060;
             display: none;
         }
+
         .cart-notification-modal.show {
             display: block;
             animation: slideIn 0.3s ease forwards;
         }
+
         .cart-notification-card {
             background: var(--main-dark);
             color: white;
@@ -264,8 +299,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
+
         .cart-notification-close {
             background: none;
             border: none;
@@ -273,9 +309,17 @@
             font-size: 20px;
             cursor: pointer;
         }
+
         @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -318,9 +362,9 @@
                             <div id="prevArrow" class="nav-arrow prev-arrow d-none">
                                 <i class="bi bi-chevron-left"></i>
                             </div>
-                            
+
                             <img id="productImage" src="" class="product-img-large" alt="Ürün Görseli">
-                            
+
                             <div id="nextArrow" class="nav-arrow next-arrow d-none">
                                 <i class="bi bi-chevron-right"></i>
                             </div>
@@ -332,12 +376,13 @@
                 <div class="col-md-6 ps-md-5 mt-4 mt-md-0 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span id="productBrand" class="badge bg-dark rounded-pill px-3 py-2 fw-bold" style="font-size: 13px;">Marka</span>
+                            <span id="productBrand" class="badge bg-dark rounded-pill px-3 py-2 fw-bold"
+                                style="font-size: 13px;">Marka</span>
                             <span id="productCategory" class="text-muted small fw-semibold">Kategori</span>
                         </div>
-                        
+
                         <h1 id="productTitle" class="fw-bold h2 mb-3">Ürün Adı</h1>
-                        
+
                         <div class="d-flex align-items-center mb-4">
                             <div class="text-warning me-2">
                                 <i class="bi bi-star-fill"></i>
@@ -354,7 +399,8 @@
                         <div class="my-4">
                             <div class="d-flex align-items-baseline">
                                 <h2 id="productCurrentPrice" class="fw-extrabold text-orange m-0 me-3">0 TL</h2>
-                                <h5 id="productOldPrice" class="text-muted text-decoration-line-through m-0 d-none">0 TL</h5>
+                                <h5 id="productOldPrice" class="text-muted text-decoration-line-through m-0 d-none">0 TL
+                                </h5>
                             </div>
                             <small id="discountBadge" class="text-danger fw-bold d-block mt-1 d-none"></small>
                         </div>
@@ -363,7 +409,8 @@
 
                         <div class="my-4">
                             <h6 class="fw-bold text-secondary mb-2">Ürün Açıklaması</h6>
-                            <p id="productDescription" class="text-muted style-text">Bu ürün için herhangi bir açıklama girilmemiş.</p>
+                            <p id="productDescription" class="text-muted style-text">Bu ürün için herhangi bir açıklama
+                                girilmemiş.</p>
                         </div>
                     </div>
 
@@ -449,7 +496,7 @@
             // Yumuşak küçülme ve kaybolma efekti
             mainImageEl.style.opacity = '0';
             mainImageEl.style.transform = 'scale(0.95)';
-            
+
             setTimeout(() => {
                 mainImageEl.src = globalImagesList[activeImageIndex];
                 mainImageEl.style.opacity = '1';
@@ -481,7 +528,7 @@
                     document.getElementById('productBrand').innerText = data.brand || data.marka || "Z-Pazar";
                     document.getElementById('productCategory').innerText = data.category || "Genel";
                     document.getElementById('productReviews').innerText = `(${data.reviewsCount || 0} Değerlendirme)`;
-                    
+
                     if (data.description || data.aciklama) {
                         document.getElementById('productDescription').innerText = data.description || data.aciklama;
                     }
@@ -524,7 +571,7 @@
                     const prevArrow = document.getElementById('prevArrow');
                     const nextArrow = document.getElementById('nextArrow');
                     const galleryContainer = document.getElementById('thumbnailGallery');
-                    galleryContainer.innerHTML = ''; 
+                    galleryContainer.innerHTML = '';
 
                     // Eğer temizlenmiş listede GERÇEKTEN birden fazla resim varsa göster
                     if (globalImagesList.length > 1) {
@@ -535,7 +582,7 @@
                         globalImagesList.forEach((imgUrl, index) => {
                             const thumbWrapper = document.createElement('div');
                             thumbWrapper.className = `thumb-wrapper ${index === 0 ? 'active' : ''}`;
-                            
+
                             const thumbImg = document.createElement('img');
                             thumbImg.src = imgUrl;
                             thumbImg.alt = `Küçük Resim ${index + 1}`;
@@ -608,7 +655,7 @@
             }
 
             localStorage.setItem(CART_KEY, JSON.stringify(cart));
-            
+
             updateCartBadge();
             animateCartBump();
             showNotification("Ürün başarıyla sepetinize eklendi!");

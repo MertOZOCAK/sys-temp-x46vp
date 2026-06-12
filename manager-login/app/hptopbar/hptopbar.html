@@ -20,6 +20,24 @@
             overflow-x: hidden;
         }
 
+        /* --- STABİL ANİMASYONLAR (adminuser.html ile tam uyumlu) --- */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: slideUp 0.5s ease-out forwards;
+            will-change: transform, opacity;
+            opacity: 0; /* Başlangıçta görünmez yapıyoruz ki animasyonla gelsin */
+        }
+
         .card {
             background: white;
             border-radius: 16px;
@@ -69,11 +87,13 @@
             display: flex;
             align-items: center;
             text-decoration: none;
+            transition: all 0.3s ease;
         }
 
         .btn-logout:hover {
             background: #dc3545;
             color: #fff;
+            transform: translateY(-2px);
         }
 
         .status-badge-container {
@@ -108,7 +128,6 @@
             100% { transform: scale(3.5); opacity: 0; }
         }
 
-        /* Seç Butonu İkon Animasyonu */
         .spin-animation {
             display: inline-block;
             animation: icon-spin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -119,7 +138,6 @@
             to { transform: rotate(180deg); }
         }
 
-        /* --- MODERN SWITCH TASARIMI --- */
         .modern-switch-container {
             background: #f1f5f9;
             padding: 12px 16px;
@@ -166,7 +184,6 @@
             box-shadow: 0 0 0 4px rgba(67,97,238,0.15);
         }
 
-        /* İkon Seçici Grid Tasarımları */
         .icon-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
@@ -211,7 +228,6 @@
             width: 100%;
         }
 
-        /* Masaüstü Sütun Genişlik Ayarları */
         table {
             table-layout: fixed;
             width: 100%;
@@ -222,7 +238,6 @@
         th:nth-child(3), td:nth-child(3) { width: 13%; }
         th:nth-child(4), td:nth-child(4) { width: 25%; }
 
-        /* --- ŞIK VE SIKIŞMAYAN MOBİL TABLO OPTİMİZASYONU --- */
         @media (max-width: 768px) {
             table {
                 table-layout: auto !important;
@@ -268,7 +283,7 @@
 </head>
 <body>
     <div class="container py-4">
-        <header class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
+        <header class="fade-in d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
             <h4 class="fw-bold mb-0 text-primary">Z-Pazar Admin</h4>
             <a href="../appmenu.html" class="btn btn-logout shadow-sm">
                 <i class="bi bi-arrow-left me-2"></i>Geri Dön
@@ -277,7 +292,7 @@
 
         <div class="row g-4">
             <div class="col-lg-5">
-                <div class="card admin-card p-4 sticky-form">
+                <div class="card admin-card p-4 sticky-form fade-in" style="animation-delay: 0.1s;">
                     <h5 id="formTitle" class="fw-bold mb-3">Yeni Mesaj Ekle</h5>
                     <form id="topbarForm">
                         <input type="hidden" id="editId">
@@ -313,7 +328,7 @@
             </div>
 
             <div class="col-lg-7">
-                <div class="card admin-card border-0 overflow-hidden">
+                <div class="card admin-card border-0 overflow-hidden fade-in" style="animation-delay: 0.2s;">
                     <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
                         <h6 class="fw-bold mb-0">Kayıtlı Mesajlar</h6>
                         <div class="status-badge-container">
@@ -350,8 +365,7 @@
                     <div class="mb-3">
                         <input type="text" id="iconSearchInput" class="form-control" placeholder="İkon adı arayın... (örn: truck, shop, tag)">
                     </div>
-                    <div class="icon-grid" id="iconGridContainer">
-                        </div>
+                    <div class="icon-grid" id="iconGridContainer"></div>
                 </div>
             </div>
         </div>
