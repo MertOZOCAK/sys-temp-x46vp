@@ -26,12 +26,12 @@ body {
 }
 
 .custom-navbar {
-    position: -webkit-sticky !important; /* Eski iOS Safari için */
-    position: sticky !important;         /* Modern tüm tarayıcılar için */
-    top: 0 !important;
-    z-index: 1050 !important;
-    background-color: #ffffff !important; /* Arkadan kayan ürünleri gizlemek için beyaz arka plan */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    position: sticky !important;
+    position: -webkit-sticky !important; /* Safari tarayıcı desteği */
+    top: 0;
+    z-index: 1050; /* Ürün kartlarının ve diğer elementlerin kesinlikle üstünde kalması için */
+    background-color: #ffffff !important; /* Arkadan kayan ürün görselleri menünün altından geçerken okunabilirliği bozmasın */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; /* Alt tarafa şık ve hafif bir gölge */
 }
 
 /* --- DÖNEN YAZILI NEW TOP BAR --- */
@@ -762,7 +762,7 @@ button:hover,
         overflow-x: clip !important;
     }
 
-    .custom-navbar{
+    custom-navbar{
         display: flex !important;
     }
 
