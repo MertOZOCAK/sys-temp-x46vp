@@ -72,7 +72,7 @@ function renderCart() {
             cartItemsContainer.innerHTML = `
                 <div class="text-center py-5">
                     <div class="mb-4">
-                        <i class="bi bi-bag-x text-muted" style="font-size: 4rem;"></i>
+                        <i class="bi bi-bag-x" style="color: #ff6000; font-size: 4rem;"></i>
                     </div>
                     <h4 class="fw-bold text-dark">Sepetiniz Bomboş</h4>
                     <p class="text-muted mb-4">Sepetinizde henüz ürün bulunmuyor. Hemen alışverişe başlayın!</p>
