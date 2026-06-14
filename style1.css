@@ -18,14 +18,26 @@
 }
 
 body {
+    position: relative;
     font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: var(--bg-light);
     color: #475569;
     /* Tasarımı yumuşatan yeni metin rengi */
 }
 
+.custom-navbar {
+    position: -webkit-sticky !important; /* Eski iOS Safari için */
+    position: sticky !important;         /* Modern tüm tarayıcılar için */
+    top: 0 !important;
+    z-index: 1050 !important;
+    background-color: #ffffff !important; /* Arkadan kayan ürünleri gizlemek için beyaz arka plan */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
 /* --- DÖNEN YAZILI NEW TOP BAR --- */
 .top-bar {
+    position:relative;
+    z-index: 1040;
     background-color: #f1f5f9;
     font-size: 13px;
     padding: 10px 0;
@@ -711,13 +723,84 @@ button:hover,
     transform: translateY(-3px);
 }
 
+/* ============================================================
+   KATEGORİ BARINDAKİ KAYDIRMA ÇUBUĞUNU HİÇBİR TAŞMA OLMADAN GİZLEME
+   ============================================================ */
+
+.category-fixed-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#smartCategoryBar {
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    
+    /* Firefox ve IE/Edge için çubuğu gizle */
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* Chrome, Safari ve tüm mobil tarayıcılarda kaydırma çubuğunu yok et */
+#smartCategoryBar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+/* Mobil cihazlarda sayfanın sağa doğru esnemesini tamamen kilitleyen koruma */
 @media (max-width: 768px) {
+    html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: clip !important;
+    }
+
+    .custom-navbar{
+        display: flex !important;
+    }
+
     .back-to-top {
         right: 16px;
         bottom: 16px;
         width: 42px;
         height: 42px;
         font-size: 22px;
+    }
+
+    #cartCountBadge {
+        /* Rozeti sabit bir konuma kilitliyoruz */
+        position: absolute !important;
+        top: 0px !important;
+        right: 0px !important;
+        
+        /* Sabit boyutlar */
+        min-width: 18px !important;
+        height: 16px !important;
+        padding: 0 2px !important;
+        
+        /* İçerik hizalama */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        /* Yazı tipi ve stil */
+        font-size: 9px !important;
+        font-weight: 800 !important;
+        border-radius: 50% !important;
+        
+        /* Taşmayı kesinlikle engelle */
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        
+        /* Sayfa taşmasını önlemek için kapsayıcı dışına çıkmasını engeller */
+        transform: scale(0.9); 
     }
 
     table,

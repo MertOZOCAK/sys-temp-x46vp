@@ -36,8 +36,16 @@ function saveLocalCart(cart) {
 function updateCartBadge() {
     const badge = document.getElementById('cartCountBadge');
     if (!badge) return;
-    const totalQty = getLocalCart().reduce((sum, item) => sum + (item.quantity || 0), 0);
-    badge.innerText = totalQty;
+    
+    // getLocalCart() boş veya tanımsız dönerse || [] ile boş bir dizi sayıyoruz, böylece reduce asla patlamıyor
+    const cartData = getLocalCart() || []; 
+    const totalQty = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    
+    if (totalQty > 99) {
+        badge.innerText = "99+";
+    } else {
+        badge.innerText = totalQty;
+    }
 }
 
 const cartNotificationCloseBtn = document.getElementById('cartNotificationClose');
