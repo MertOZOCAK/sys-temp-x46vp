@@ -27,16 +27,20 @@ body {
 
 .custom-navbar {
     position: sticky !important;
-    position: -webkit-sticky !important; /* Safari tarayıcı desteği */
+    position: -webkit-sticky !important;
+    /* Safari tarayıcı desteği */
     top: 0;
-    z-index: 1050; /* Ürün kartlarının ve diğer elementlerin kesinlikle üstünde kalması için */
-    background-color: #ffffff !important; /* Arkadan kayan ürün görselleri menünün altından geçerken okunabilirliği bozmasın */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; /* Alt tarafa şık ve hafif bir gölge */
+    z-index: 1050;
+    /* Ürün kartlarının ve diğer elementlerin kesinlikle üstünde kalması için */
+    background-color: #ffffff !important;
+    /* Arkadan kayan ürün görselleri menünün altından geçerken okunabilirliği bozmasın */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    /* Alt tarafa şık ve hafif bir gölge */
 }
 
 /* --- DÖNEN YAZILI NEW TOP BAR --- */
 .top-bar {
-    position:relative;
+    position: relative;
     z-index: 1040;
     background-color: #f1f5f9;
     font-size: 13px;
@@ -683,6 +687,210 @@ button:hover,
     font-size: 13px;
 }
 
+/* ============================================================
+   PREMIUM ANIMASYONLU FOOTER STİLLERİ
+   ============================================================ */
+.premium-footer {
+    background-color: var(--main-dark);
+    color: #94a3b8;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Üst Kısımdaki Animasyonlu Kayan Gradyan Çizgi */
+.premium-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), #ff8e43, var(--main-dark), var(--primary-color));
+    background-size: 200% 100%;
+    animation: gradientMove 4s linear infinite;
+}
+
+/* Footer Başlığı İçin Hafif Büyüme (Hover) Efekti */
+.premium-footer h3.fw-bold {
+    display: inline-block;
+    /* Efektin tüm satırı değil sadece yazıyı etkilemesi için */
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.premium-footer h3.fw-bold:hover {
+    transform: scale(1.05);
+    /* Üzerine gelindiğinde %5 oranında pürüzsüzce büyütür */
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+.footer-title {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 22px;
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+}
+
+/* Başlıkların Altındaki Çizgi Animasyonu */
+.footer-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 25px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-footer:hover .footer-title::after {
+    width: 100%;
+}
+
+.footer-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #94a3b8;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 14px;
+}
+
+/* Linkler Üzerine Gelince Sağa Kayma Animasyonu */
+.footer-links a {
+    color: #94a3b8 !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer-links a::before {
+    content: '\F285';
+    /* Bootstrap İkonu: chevron-right */
+    font-family: bootstrap-icons !important;
+    font-size: 11px;
+    margin-right: 8px;
+    color: var(--primary-color);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #ffffff !important;
+    transform: translateX(6px);
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Sosyal Medya İkonları Zıplama Animasyonu */
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #ffffff !important;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    font-size: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.social-icon:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-6px) scale(1.1);
+    box-shadow: 0 10px 20px rgba(255, 96, 0, 0.3);
+}
+
+/* Abonelik Formu Stilleri */
+.newsletter-form .footer-input {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 50px 14px 18px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.newsletter-form .footer-input:focus {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(255, 96, 0, 0.1);
+    color: #fff;
+}
+
+.newsletter-form .footer-input::placeholder {
+    color: #64748b;
+}
+
+.footer-submit-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-submit-btn:hover {
+    background-color: #ff8e43 !important;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 4px 12px rgba(255, 96, 0, 0.4);
+}
+
+.footer-bottom {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.payment-methods i {
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.payment-methods i:hover {
+    transform: translateY(-3px);
+    color: #ffffff !important;
+}
+
 /* --- YUKARI DÖN (BACK TO TOP) BUTONU --- */
 .back-to-top {
     position: fixed;
@@ -721,6 +929,28 @@ button:hover,
     background-color: var(--primary-color);
     box-shadow: 0 10px 28px rgba(255, 96, 0, 0.3);
     transform: translateY(-3px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+    .back-to-top {
+        right: 16px;
+        bottom: 16px;
+        width: 42px;
+        height: 42px;
+        font-size: 22px;
+    }
+    .back-to-top:hover {
+        background-color: var(--main-dark);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+        transform: translateY(0);
+    }
+
+    .back-to-top:active {
+        background-color: var(--primary-color);
+        box-shadow: 0 10px 28px rgba(255, 96, 0, 0.3);
+        transform: translateY(-3px);
+    }
 }
 
 /* ============================================================
@@ -740,7 +970,7 @@ button:hover,
     max-width: 100% !important;
     white-space: nowrap !important;
     flex-wrap: nowrap !important;
-    
+
     /* Firefox ve IE/Edge için çubuğu gizle */
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
@@ -756,13 +986,15 @@ button:hover,
 
 /* Mobil cihazlarda sayfanın sağa doğru esnemesini tamamen kilitleyen koruma */
 @media (max-width: 768px) {
-    html, body {
+
+    html,
+    body {
         width: 100% !important;
         max-width: 100% !important;
         overflow-x: clip !important;
     }
 
-    custom-navbar{
+    custom-navbar {
         display: flex !important;
     }
 
@@ -779,28 +1011,28 @@ button:hover,
         position: absolute !important;
         top: 0px !important;
         right: 0px !important;
-        
+
         /* Sabit boyutlar */
         min-width: 18px !important;
         height: 16px !important;
         padding: 0 2px !important;
-        
+
         /* İçerik hizalama */
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        
+
         /* Yazı tipi ve stil */
         font-size: 9px !important;
         font-weight: 800 !important;
         border-radius: 50% !important;
-        
+
         /* Taşmayı kesinlikle engelle */
         white-space: nowrap !important;
         overflow: hidden !important;
-        
+
         /* Sayfa taşmasını önlemek için kapsayıcı dışına çıkmasını engeller */
-        transform: scale(0.9); 
+        transform: scale(0.9);
     }
 
     table,
