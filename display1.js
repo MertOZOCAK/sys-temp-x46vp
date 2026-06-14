@@ -627,3 +627,28 @@ window.addToCart = function(productId) {
 
     showCartNotification("Ürün başarıyla sepetinize eklendi!", 'success');
 };
+
+// =========================================================================
+// YUKARI DÖN (BACK TO TOP) BUTONU MANTIĞI
+// =========================================================================
+const backToTopBtn = document.getElementById('backToTopBtn');
+
+if (backToTopBtn) {
+    // Sayfa kaydırıldığında çalışacak fonksiyon
+    window.addEventListener('scroll', () => {
+        // Kullanıcı sayfayı 400 pikselden fazla aşağı kaydırdıysa butonu göster
+        if (window.scrollY > 400) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    });
+
+    // Butona tıklandığında yukarı pürüzsüz (smooth) şekilde fırlat
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
