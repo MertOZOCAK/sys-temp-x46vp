@@ -1,0 +1,517 @@
+/* ============================================================
+   Z-PAZAR PREMIUM MOBİL UYGULAMA SAYFASI (YENİ TASARIM)
+   ============================================================ */
+
+:root {
+    --app-dark: #0f172a;
+    --app-orange: #ff6000;
+    --app-light: #f8fafc;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body.app-page-body {
+    background-color: var(--app-light);
+    /* Modern Ağ (Mesh) Benzeri Arka Plan Dokusu */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 96, 0, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(15, 23, 42, 0.04) 0px, transparent 50%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Yarı Saydam Üst Menü */
+.app-navbar {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.app-hero-section {
+    padding: 60px 0 100px 0;
+    min-height: calc(100vh - 76px);
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    align-items: center;
+    position: relative;
+}
+
+/* Sayfa Açılış Animasyonları */
+.fade-in-up {
+    animation: fadeInUpApp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+@keyframes fadeInUpApp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- SOL TARAF: TİPOGRAFİ VE BUTON --- */
+
+.app-badge-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid rgba(255, 96, 0, 0.2);
+    color: var(--app-orange);
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 10px 25px rgba(255, 96, 0, 0.08);
+}
+
+.app-title {
+    font-size: 3.8rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--app-dark);
+    letter-spacing: -1.5px;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--app-orange) 0%, #ff8e43 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* YENİ NESİL APK İNDİRME BUTONU */
+.premium-apk-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: var(--app-dark);
+    padding: 14px 36px 14px 16px;
+    border-radius: 28px;
+    text-decoration: none !important;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2), inset 0 2px 2px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.premium-apk-btn:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 30px 60px rgba(255, 96, 0, 0.25), inset 0 2px 2px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 96, 0, 0.5);
+}
+
+.apk-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--app-orange), #ff8e43);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    margin-right: 22px;
+    box-shadow: 0 8px 20px rgba(255, 96, 0, 0.4);
+    z-index: 2;
+}
+
+.apk-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+.apk-subtitle {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 3px;
+}
+
+.apk-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Buton Üzerinde Dolaşan Işıltı Animasyonu */
+.btn-shine {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transform: skewX(-25deg);
+    animation: shineSweep 4s infinite;
+    z-index: 1;
+}
+
+@keyframes shineSweep {
+    0% { left: -100%; }
+    20%, 100% { left: 200%; }
+}
+
+/* --- SAĞ TARAF: 3D İZOMETRİK TELEFON MAKETİ --- */
+
+.isometric-phone-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px; /* 3D Derinlik Ayarı */
+    animation: floatContainer 6s ease-in-out infinite;
+}
+
+@keyframes floatContainer {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+}
+
+/* Arkadaki Turuncu Atmosfer Işığı */
+.glow-orb {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(255, 96, 0, 0.18) 0%, transparent 60%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(40px);
+    z-index: 0;
+}
+
+/* Gerçekçi 3D Telefon Çerçevesi */
+.smartphone-frame {
+    position: relative;
+    width: 290px;
+    height: 580px;
+    background: var(--app-dark);
+    border-radius: 45px;
+    border: 12px solid #1e293b;
+    box-shadow: 
+        -35px 45px 60px rgba(0, 0, 0, 0.25),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+    transform: rotateX(15deg) rotateY(-25deg) rotateZ(5deg);
+    transform-style: preserve-3d;
+    z-index: 2;
+    overflow: hidden;
+}
+
+/* Ekrana Vuran Cam Parlaması (Glass Glare) */
+.glass-glare {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 40%);
+    transform: rotate(-30deg);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.smartphone-screen {
+    width: 100%;
+    height: 100%;
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+/* Havada Asılı Duran Rozetler */
+.floating-badge {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 14px 26px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--app-dark);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 3;
+}
+
+.floating-badge i {
+    color: var(--app-orange);
+    font-size: 20px;
+}
+
+.badge-1 {
+    top: 15%; right: -5%;
+    animation: floatBadge1 4s ease-in-out infinite alternate;
+}
+
+.badge-2 {
+    bottom: 25%; left: -10%;
+    animation: floatBadge2 5s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatBadge1 {
+    to { transform: translateY(-20px) translateX(10px); }
+}
+@keyframes floatBadge2 {
+    to { transform: translateY(20px) translateX(-10px); }
+}
+
+/* Telefon İçindeki Sahte Uygulama Tasarımı */
+.mock-app-header {
+    background: var(--app-dark);
+    padding: 22px 20px;
+}
+.mock-banner {
+    background: linear-gradient(135deg, var(--app-orange), #ff8e43);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 10px 25px rgba(255, 96, 0, 0.25);
+}
+.mock-product-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
+}
+
+/* --- ALT ÖZELLİK KARTLARI --- */
+
+.feature-card {
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 28px;
+    padding: 45px 35px;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 35px 60px rgba(15, 23, 42, 0.06);
+    border-color: rgba(255, 96, 0, 0.2);
+}
+
+.feature-icon-box {
+    width: 70px; height: 70px;
+    background: rgba(255, 96, 0, 0.1);
+    color: var(--app-orange);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 28px;
+    transition: all 0.4s ease;
+}
+
+.feature-card:hover .feature-icon-box {
+    background: var(--app-orange);
+    color: white;
+    transform: scale(1.15) rotate(8deg);
+}
+
+/* ============================================================
+   YENİLENEN PREMIUM SÜRÜM GEÇMİŞİ VE MODAL STİLLERİ
+   ============================================================ */
+
+/* 1. Sürüm Seçim Butonları Tasarımı (image_1d5a1e.png Çözümü) */
+.btn-version-active {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 96, 0, 0.25);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 22px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-version-active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+    border-color: var(--app-orange);
+}
+
+.badge-latest {
+    background: linear-gradient(135deg, var(--app-orange) 0%, #ff8e43 100%);
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+
+    padding: 3px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-version-old {
+    background-color: #f1f5f9 !important; /* Tamamen mat, sönük bir arşiv gri arka planı */
+    color: #64748b !important; /* Güncel sürüm gibi parlamayan soluk yazı rengi */
+    border: 1px solid #cbd5e1 !important; /* Arka planı sınırlayan net ama narin çerçeve */
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: none !important; /* Premium efektleri, gölgeleri tamamen kaldırdık */
+    transform: none !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Üzerine gelince güncel sürüm gibi yukarı zıplamaz, sadece hafifçe koyulaşır */
+.btn-version-old:hover {
+    background-color: #e2e8f0 !important; 
+    color: #334155 !important;
+    border-color: #94a3b8 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* İçindeki arşiv ikonu */
+.btn-version-old i {
+    color: #94a3b8 !important;
+    font-size: 14px;
+}
+
+/* 2. Premium Modal Gövde Yapısı (image_1d5ab4.png Çözümü) */
+.premium-modal {
+    border: none !important;
+    border-radius: 28px !important;
+    background: #ffffff !important;
+    box-shadow: 0 30px 70px rgba(15, 23, 42, 0.2) !important;
+    overflow: hidden;
+}
+
+.premium-modal-header {
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    padding: 26px 28px 18px 28px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-icon-glow {
+    width: 46px;
+    height: 46px;
+    background: rgba(255, 96, 0, 0.08);
+    color: var(--app-orange);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.modal-pre-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 1px;
+}
+
+.custom-close-btn {
+    background-color: #f1f5f9 !important;
+    padding: 10px !important;
+    border-radius: 50% !important;
+    font-size: 11px !important;
+    transition: all 0.2s ease !important;
+}
+
+.custom-close-btn:hover {
+    background-color: #e2e8f0 !important;
+    transform: rotate(90deg);
+}
+
+.premium-modal-body {
+    padding: 28px !important;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+/* Değişim Günlüğü Modern Satır Kartları */
+.changelog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.changelog-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 16px 20px;
+    border-radius: 18px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.changelog-item:hover {
+    background: #ffffff;
+    border-color: rgba(255, 96, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(255, 96, 0, 0.04);
+    transform: translateX(4px);
+}
+
+.changelog-icon-wrapper {
+    color: #2dd4bf; /* Canlı modern turkuaz yeşili onay ikonu */
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.changelog-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+    line-height: 1.6;
+}
+
+/* Modal Kapatma Butonu */
+.premium-modal-close-btn {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px !important;
+    border-radius: 16px !important;
+    width: 100%;
+    transition: all 0.3s ease;
+    border: none !important;
+}
+
+.premium-modal-close-btn:hover {
+    background: #1e293b !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+}
+
+@media (max-width: 768px) {
+    #versionButtonsContainer {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+}
